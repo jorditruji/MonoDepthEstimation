@@ -65,7 +65,7 @@ def make_partitions(scenes, output_filename, sample_extension, n_folds=1, train_
 	dataset['val']=[]
 	dataset['test']=[]
 	print("Found {}  scenes".format(n_scenes))
-	for _i in range(n_partitions):
+	for _i in range(n_folds):
 		shuffle(scenes)
 		train = scenes[0:int(0.6*n_scenes)]
 		val_test = scenes[int(0.6*n_scenes):]
