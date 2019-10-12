@@ -58,7 +58,7 @@ def make_partitions(scenes, output_filename, sample_extension, n_folds=1, train_
 
 
 	"""
-	assert train_size+val_size+test_size == 1
+	assert int(train_size+val_size+test_size) == 1
 	n_scenes = len(scenes)
 	# Initialize dict to store data paths
 	dataset = {}
