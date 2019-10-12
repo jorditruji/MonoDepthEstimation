@@ -42,7 +42,7 @@ def read_files(path, extension):
 	return glob(path+'*.'+extension)
 
 
-def make_partitions(scenes, output_filename, n_folds=1, train_size = 0.7, val_size = 0.2, test_size = 0.1):
+def make_partitions(scenes, output_filename, sample_extension, n_folds=1, train_size = 0.7, val_size = 0.2, test_size = 0.1):
 	"""
 	Splits the dataset in 3 partitions at scene level to avoid data leaks between the partitions.
 	Those partitions are stored at disk as a dict with train, val and test as keys which contain
@@ -76,15 +76,15 @@ def make_partitions(scenes, output_filename, n_folds=1, train_size = 0.7, val_si
 		
 		# Read depth file names and add them to dataset splits
 		for _j, scene in enumerate(train):
-			dataset['train']+=read_files(scene)
+			dataset['train']+=read_files(scene, sample_extension)
 		print("Train samples {}".format(len(dataset['train'])))
 
 		for _j, scene in enumerate(val):
-			dataset['val']+=read_files(scene)
+			dataset['val']+=read_files(scene, sample_extension)
 		print("Validation samples {}".format(len(dataset['val'])))
 
-		for _j, scene in enumerate(test):
-			dataset['test']+=read_files(scene)
+		for _j, scene in enumerate(test,):
+			dataset['test']+=read_files(scene, sample_extension)
 		print("Test samples {}".format(len(dataset['test'])))
 
 		print("Saving data!!!! Finished")
@@ -95,8 +95,12 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--dataset_path", default=None, type=str, required=True,
 	                    help="The dataset to process path. Is should contain the folders corresponding to each scene.")
+
+	parser.add_argument("--data_extension", default=None, type=str, required=False,
+	                    help="Extension of the samples, should only match inputs or ground_truths but not both.")
+
 	parser.add_argument("--output_filename", default=None, type=str, required=False,
-	                    help="The dataset to process path. Is should contain the folders corresponding to each scene.")
+	                    help="Name of the file to save the partitions.")
 
 	args = parser.parse_args()
 
@@ -108,5 +112,8 @@ if __name__ == '__main__':
 	if output_filename is None:
 		output_filename = DATA_PATH.split('/')[-1]
 
+
+	data_extension = args.data_extension
+
 	scenes = read_scenes(DATA_PATH)
-	make_partitions(scenes, output_filename)
+	make_partitions(scenes, output_filename, data_extension)
