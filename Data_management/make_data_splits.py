@@ -39,7 +39,8 @@ def read_files(path, extension):
 
 
 	"""
-	return glob(path+'*.'+extension)
+	#print(path, path+'*'+extension)
+	return glob(path+'*'+extension)
 
 
 def make_partitions(scenes, output_filename, sample_extension, n_folds=1, train_size = 0.7, val_size = 0.2, test_size = 0.1):
@@ -51,10 +52,10 @@ def make_partitions(scenes, output_filename, sample_extension, n_folds=1, train_
 
 	Args:
 		scenes (list): List of paths to the dataset scenes
-		n_folds (int): Amount of folds 
-		train_size (int): Proportion of train samples
-		val_size (int): Proportion of val samples
-		test_size (int): Proportion of test samples
+		n_folds (int): Amount of folds
+		train_size (float): Ratio of train samples
+		val_size (float): Ratio of val samples
+		test_size (float): Ratio of test samples
 
 
 	"""
@@ -69,8 +70,8 @@ def make_partitions(scenes, output_filename, sample_extension, n_folds=1, train_
 		shuffle(scenes)
 		train = scenes[0:int(0.6*n_scenes)]
 		val_test = scenes[int(0.6*n_scenes):]
-		val =  val_test[0:int(0.5*len(val_test))]
-		test =  val_test[int(0.5*len(val_test)):]
+		val =  val_test[0:int((val_size/(val_size+test_size))*len(val_test))]
+		test =  val_test[int((val_size/(val_size+test_size))*len(val_test)):]
 		print("{} training scenes\n{} validation scenes\n{} testing scenes".format(len(train), len(val), len(test)))
 		
 		# Read depth file names and add them to dataset splits
@@ -109,7 +110,8 @@ if __name__ == '__main__':
 
 	output_filename = args.output_filename
 	if output_filename is None:
-		output_filename = DATA_PATH.split('/')[-1]
+		print(DATA_PATH.split('/'))
+		output_filename = DATA_PATH.split('/')[-2]
 
 
 	data_extension = args.data_extension
