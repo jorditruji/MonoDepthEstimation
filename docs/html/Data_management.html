@@ -83,6 +83,8 @@
                 <div class="local-toc"><ul>
 <li><a class="reference internal" href="#">Data_management package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-Data_management.data_normalization">Data_management.data_normalization module</a></li>
+<li><a class="reference internal" href="#module-Data_management.dataset">Data_management.dataset module</a></li>
 <li><a class="reference internal" href="#module-Data_management.make_data_splits">Data_management.make_data_splits module</a></li>
 <li><a class="reference internal" href="#module-Data_management">Module contents</a></li>
 </ul>
@@ -150,11 +152,81 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
+<div class="section" id="module-Data_management.data_normalization">
+<span id="data-management-data-normalization-module"></span><h2>Data_management.data_normalization module<a class="headerlink" href="#module-Data_management.data_normalization" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-Data_management.dataset">
+<span id="data-management-dataset-module"></span><h2>Data_management.dataset module<a class="headerlink" href="#module-Data_management.dataset" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Data_management.dataset.GenericDataset">
+<em class="property">class </em><code class="sig-name descname">GenericDataset</code><span class="sig-paren">(</span><em class="sig-param">depth_names</em>, <em class="sig-param">is_train=True</em><span class="sig-paren">)</span><a class="headerlink" href="#Data_management.dataset.GenericDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
+<p>Reads and augments the dataset images according to its tate and parameters. Base generic class implementing the common methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>list</strong><strong>)</strong> (<em>depth_names</em>) – List of the depth images paths</p></li>
+<li><p><strong>(</strong><strong>boolean</strong><strong>)</strong> (<em>is_train</em>) – Load images for train/inference</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="Data_management.dataset.NYUDataset">
+<em class="property">class </em><code class="sig-name descname">NYUDataset</code><span class="sig-paren">(</span><em class="sig-param">depth_names</em>, <em class="sig-param">is_train=True</em><span class="sig-paren">)</span><a class="headerlink" href="#Data_management.dataset.NYUDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#Data_management.dataset.GenericDataset" title="Data_management.dataset.GenericDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data_management.dataset.GenericDataset</span></code></a></p>
+<p>Reads and augments the dataset images according to its tate and parameters. NYU dataloader implementation
+.. attribute:: depth_names</p>
+<blockquote>
+<div><p>List of the depth images paths.</p>
+<dl class="field-list simple">
+<dt class="field-odd">type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="attribute">
+<dt id="Data_management.dataset.NYUDataset.is_train">
+<code class="sig-name descname">is_train</code><a class="headerlink" href="#Data_management.dataset.NYUDataset.is_train" title="Permalink to this definition">¶</a></dt>
+<dd><p>State of the loader. Possible states are training/inference.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="Data_management.dataset.NYUDataset.read_depth">
+<code class="sig-name descname">read_depth</code><span class="sig-paren">(</span><em class="sig-param">file</em><span class="sig-paren">)</span><a class="headerlink" href="#Data_management.dataset.NYUDataset.read_depth" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="Data_management.dataset.read_image">
+<code class="sig-name descname">read_image</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">file</em><span class="sig-paren">)</span><a class="headerlink" href="#Data_management.dataset.read_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a RGB mage and returns it as a PIL RGB image</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file</strong> (<em>int</em>) – Path to image</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>RGB color image</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>rgb_frame (PIL)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 <div class="section" id="module-Data_management.make_data_splits">
 <span id="data-management-make-data-splits-module"></span><h2>Data_management.make_data_splits module<a class="headerlink" href="#module-Data_management.make_data_splits" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="Data_management.make_data_splits.make_partitions">
-<code class="sig-name descname">make_partitions</code><span class="sig-paren">(</span><em class="sig-param">scenes</em>, <em class="sig-param">output_filename</em>, <em class="sig-param">n_folds=1</em>, <em class="sig-param">train_size=0.7</em>, <em class="sig-param">val_size=0.2</em>, <em class="sig-param">test_size=0.1</em><span class="sig-paren">)</span><a class="headerlink" href="#Data_management.make_data_splits.make_partitions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">make_partitions</code><span class="sig-paren">(</span><em class="sig-param">scenes</em>, <em class="sig-param">output_filename</em>, <em class="sig-param">sample_extension</em>, <em class="sig-param">n_folds=1</em>, <em class="sig-param">train_size=0.7</em>, <em class="sig-param">val_size=0.2</em>, <em class="sig-param">test_size=0.1</em><span class="sig-paren">)</span><a class="headerlink" href="#Data_management.make_data_splits.make_partitions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Splits the dataset in 3 partitions at scene level to avoid data leaks between the partitions.
 Those partitions are stored at disk as a dict with train, val and test as keys which contain
 the paths to the images for each partition</p>
@@ -163,9 +235,9 @@ the paths to the images for each partition</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>scenes</strong> (<em>list</em>) – List of paths to the dataset scenes</p></li>
 <li><p><strong>n_folds</strong> (<em>int</em>) – Amount of folds</p></li>
-<li><p><strong>train_size</strong> (<em>int</em>) – Proportion of train samples</p></li>
-<li><p><strong>val_size</strong> (<em>int</em>) – Proportion of val samples</p></li>
-<li><p><strong>test_size</strong> (<em>int</em>) – Proportion of test samples</p></li>
+<li><p><strong>train_size</strong> (<em>float</em>) – Ratio of train samples</p></li>
+<li><p><strong>val_size</strong> (<em>float</em>) – Ratio of val samples</p></li>
+<li><p><strong>test_size</strong> (<em>float</em>) – Ratio of test samples</p></li>
 </ul>
 </dd>
 </dl>
