@@ -1,0 +1,277 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Data_management package &mdash; MonoDepthEstimation 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="MonoDepthEstimation 0.1 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> MonoDepthEstimation
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <!-- Local TOC -->
+                <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Data_management package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-Data_management.make_data_splits">Data_management.make_data_splits module</a></li>
+<li><a class="reference internal" href="#module-Data_management">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MonoDepthEstimation</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Data_management package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/Data_management.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="data-management-package">
+<h1>Data_management package<a class="headerlink" href="#data-management-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-Data_management.make_data_splits">
+<span id="data-management-make-data-splits-module"></span><h2>Data_management.make_data_splits module<a class="headerlink" href="#module-Data_management.make_data_splits" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="Data_management.make_data_splits.make_partitions">
+<code class="sig-name descname">make_partitions</code><span class="sig-paren">(</span><em class="sig-param">scenes</em>, <em class="sig-param">output_filename</em>, <em class="sig-param">n_folds=1</em>, <em class="sig-param">train_size=0.7</em>, <em class="sig-param">val_size=0.2</em>, <em class="sig-param">test_size=0.1</em><span class="sig-paren">)</span><a class="headerlink" href="#Data_management.make_data_splits.make_partitions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Splits the dataset in 3 partitions at scene level to avoid data leaks between the partitions.
+Those partitions are stored at disk as a dict with train, val and test as keys which contain
+the paths to the images for each partition</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenes</strong> (<em>list</em>) – List of paths to the dataset scenes</p></li>
+<li><p><strong>n_folds</strong> (<em>int</em>) – Amount of folds</p></li>
+<li><p><strong>train_size</strong> (<em>int</em>) – Proportion of train samples</p></li>
+<li><p><strong>val_size</strong> (<em>int</em>) – Proportion of val samples</p></li>
+<li><p><strong>test_size</strong> (<em>int</em>) – Proportion of test samples</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Data_management.make_data_splits.read_files">
+<code class="sig-name descname">read_files</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">extension</em><span class="sig-paren">)</span><a class="headerlink" href="#Data_management.make_data_splits.read_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read all files that match a given extenstion in a given path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Path to dataset directory.</p></li>
+<li><p><strong>extension</strong> (<em>str</em>) – Extension of the files to read. Ex: mp3, pickle, json…</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Path to the files found</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>filepaths (list)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Data_management.make_data_splits.read_scenes">
+<code class="sig-name descname">read_scenes</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#Data_management.make_data_splits.read_scenes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads all the dirs(scenes) for a given dataset path organized by scenes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to dataset directory.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Each path corresponds to a scene</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>paths (list)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-Data_management">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-Data_management" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Jordi Morera.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE: 'true'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+source package
+==============
+
+Subpackages
+-----------
+
+.. toctree::
+
+   source.Data_management
+
+Module contents
+---------------
+
+.. automodule:: source
+   :members:
+   :undoc-members:
+   :show-inheritance:
