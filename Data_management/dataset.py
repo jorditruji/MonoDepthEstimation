@@ -11,7 +11,17 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 import pickle
 import cv2
-
+from PIL import Image
+import cv2
+import numpy as np
+from torch.utils.data import Dataset
+from albumentations import (
+    HorizontalFlip, IAAPerspective, ShiftScaleRotate, CLAHE, RandomRotate90,
+    Transpose, ShiftScaleRotate, Blur, OpticalDistortion, GridDistortion, HueSaturationValue,
+    IAAAdditiveGaussianNoise, GaussNoise, MotionBlur, MedianBlur, IAAPiecewiseAffine,
+    IAASharpen, IAAEmboss, RandomBrightnessContrast, Flip, OneOf, Compose
+)
+from albumentations.pytorch import ToTensor
 
 
 'RECORDATORI SCANNET dataset: \
@@ -20,7 +30,7 @@ Min depth(uint16) : 264 \
 Mean RGB: [0.4944742  0.4425867  0.38153833] \
 Std RGB: [0.23055981 0.22284868 0.21425385] '
 
-def read_image(self,file):
+def read_image(file):
     '''
     Read a RGB mage and returns it as a PIL RGB image
 
@@ -116,7 +126,34 @@ class NYUDataset(GenericDataset):
         image = cv2.imread(file, -cv2.IMREAD_ANYDEPTH)
         return image        
 
-
+def strong_aug(p=0.5):
+    return Compose([
+        #RandomRotate90(),
+        Flip(),
+        #Transpose(),
+        OneOf([
+            IAAAdditiveGaussianNoise(),
+            GaussNoise(),
+        ], p=0.2),
+        OneOf([
+            MotionBlur(p=0.2),
+            MedianBlur(blur_limit=3, p=0.1),
+            Blur(blur_limit=3, p=0.1),
+        ], p=0.2),
+        ShiftScaleRotate(shift_limit=0.0625, scale_limit=0.2, rotate_limit=45, p=0.2),
+        OneOf([
+            OpticalDistortion(p=0.3),
+            GridDistortion(p=0.1),
+            IAAPiecewiseAffine(p=0.3),
+        ], p=0.2),
+        OneOf([
+            CLAHE(clip_limit=2),
+            IAASharpen(),
+            IAAEmboss(),
+            RandomBrightnessContrast(),
+        ], p=0.3),
+        HueSaturationValue(p=0.3),
+    ], p=p)
 
 
 if __name__ == '__main__':
@@ -131,7 +168,7 @@ if __name__ == '__main__':
     dataset = NYUDataset(depths)
 
     print(dataset.RGB_frames)
-    img = dataset.read_image(dataset.RGB_frames[0])
+    img = read_image(dataset.RGB_frames[0])
     plt.imshow(img)
     plt.figure()
     depth = dataset.read_depth(dataset.depth_frames[0])
@@ -141,4 +178,25 @@ if __name__ == '__main__':
 
     plt.imshow(depth, cmap='Greys_r')
 
+    data = {"image": np.array(img), "mask": depth}
+    augm = strong_aug(0.9)
+
+    fig=plt.figure()
+    fig=plt.figure()
+    labels = []
+    columns = 2
+    rows = 2
+    for i in range(1, columns*rows +1):
+        augmented = augm(**data)
+        fig.add_subplot(rows, columns, i)
+        plt.imshow( augmented["mask"],  cmap='Greys_r')
+        labels.append( augmented["image"])
+
+    fig=plt.figure()
+
+    for _i, i in enumerate(range(1, columns*rows +1)):
+        fig.add_subplot(rows, columns, i)
+        plt.imshow( labels[_i])
+
     plt.show()
+
