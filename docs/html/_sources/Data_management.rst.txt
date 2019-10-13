@@ -20,6 +20,14 @@ Data\_management.dataset module
    :undoc-members:
    :show-inheritance:
 
+Data\_management.image\_processing module
+-----------------------------------------
+
+.. automodule:: Data_management.image_processing
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Data\_management.make\_data\_splits module
 ------------------------------------------
 
