@@ -15,6 +15,7 @@ from PIL import Image
 import cv2
 import numpy as np
 from torch.utils.data import Dataset
+import albumentations as A
 from albumentations import (
     HorizontalFlip, IAAPerspective, ShiftScaleRotate, CLAHE, RandomRotate90,
     Transpose, ShiftScaleRotate, Blur, OpticalDistortion, GridDistortion, HueSaturationValue,
@@ -22,7 +23,6 @@ from albumentations import (
     IAASharpen, IAAEmboss, RandomBrightnessContrast, Flip, OneOf, Compose
 )
 from albumentations.pytorch import ToTensor
-
 
 'RECORDATORI SCANNET dataset: \
 Max depth(uint16): 9998 \
@@ -57,12 +57,14 @@ class GenericDataset(data.Dataset):
 
     :ivar depth_names (list): List of the depth images paths 
     :ivar is_train (boolean): Load images for train/inference 
-
+    :ivar transforms (albumentation or str): Loads augmentator config from path if str and sets it to attr transforms
     """
-    def __init__(self, depth_names, is_train = True):
+    def __init__(self, depth_names, is_train = True, transforms = None):
         # Paths to dataset samples
         self.is_train = is_train 
         self.depth_frames = depth_names 
+        self.transforms = transforms
+        self.RGB_frames = self._depth2RGB()
 
     def __len__(self):
         """
@@ -94,6 +96,8 @@ class GenericDataset(data.Dataset):
 
         #return depth, rgb, self.depth_frames[index]
 
+
+
     def _depth2RGB(self):
         """
         Abstract method. It converts the path to depth_frames to match the color image paths.
@@ -112,11 +116,7 @@ class NYUDataset(GenericDataset):
         depth_names (list): List of the depth images paths. 
         is_train (boolean): State of the loader. Possible states are training/inference.
     """
-    def __init__(self, depth_names, is_train = True):
-        # Paths to dataset samples
-        self.is_train = is_train
-        self.depth_frames = depth_names
-        self.RGB_frames = self._depth2RGB()
+
 
     def _depth2RGB(self):
         '''Edit strings to match rgb image paths'''
@@ -162,16 +162,17 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
 
+    augm = strong_aug(0.9)
 
     depths = ['../sample_images/classroom_000310depth.png','../sample_images/classroom_000350depth.png',
               '../sample_images/classroom_000329depth.png']
-    dataset = NYUDataset(depths)
+    dataset = NYUDataset(depths, is_train = False, transforms=  augm)
 
     print(dataset.RGB_frames)
-    img = read_image(dataset.RGB_frames[0])
+    img = read_image(dataset.RGB_frames[-1])
     plt.imshow(img)
     plt.figure()
-    depth = dataset.read_depth(dataset.depth_frames[0])
+    depth = dataset.read_depth(dataset.depth_frames[-1])
     print(depth.dtype)
     print(np.max(depth))
     print(np.min(depth))
@@ -180,6 +181,7 @@ if __name__ == '__main__':
 
     data = {"image": np.array(img), "mask": depth}
     augm = strong_aug(0.9)
+    A.save(augm, 'transform_prova.json')
 
     fig=plt.figure()
     fig=plt.figure()
@@ -199,4 +201,5 @@ if __name__ == '__main__':
         plt.imshow( labels[_i])
 
     plt.show()
+    print(dataset.transforms)
 
