@@ -126,6 +126,35 @@ class NYUDataset(GenericDataset):
         image = cv2.imread(file, -cv2.IMREAD_ANYDEPTH)
         return image        
 
+
+
+    def __getitem__(self, index):
+        """
+        Reads a complete sample of the dataset including its ground truth.
+
+        Args:
+            index (int): Index of the sample to retetrieve
+
+        Returns:
+            rgb_frame (Tensor): Image of shape (#channels, H, W)
+            depth_frame (Tensor): Depth map of shape (1, H, W)
+            filename (str): 
+
+        """
+        depth = self.read_depth(self.depth_frames[index])
+        rgb = read_image(self.RGB_frames[index])
+
+        if self.is_train:
+            sample =  {"image": rgb, "mask": depth}
+            augmented = self.transforms(**data)
+            rgb, depth  = augmented['image'], augmented['mask'] 
+
+
+        return depth, rgb, self.depth_frames[index]
+
+
+
+
 def strong_aug(p=0.5):
     return Compose([
         #RandomRotate90(),
