@@ -57,8 +57,7 @@ if __name__ == '__main__':
 	# Calculate interesting data
 	mean = np.mean(means, axis = 0)
 	std =  np.mean(stds, axis = 0)
+	np.save('max_depths.npy',vec_maxs)
+	np.save('min_depths.npy', vec_mins)
 
-	max_depth = np.max(vec_maxs)
-	min_depth = np.min(vec_mins)
 
-	print("Mean: {} \n STD: {} \n max_depth: {} \n min_depth: {}".format(mean, std, max_depth, min_depth))
