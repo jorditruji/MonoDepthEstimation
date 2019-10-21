@@ -83,7 +83,7 @@
                 <div class="local-toc"><ul>
 <li><a class="reference internal" href="#">Data_management package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-Data_management.data_normalization">Data_management.data_normalization module</a></li>
+<li><a class="reference internal" href="#data-management-data-normalization-module">Data_management.data_normalization module</a></li>
 <li><a class="reference internal" href="#module-Data_management.dataset">Data_management.dataset module</a></li>
 <li><a class="reference internal" href="#module-Data_management.image_processing">Data_management.image_processing module</a></li>
 <li><a class="reference internal" href="#module-Data_management.make_data_splits">Data_management.make_data_splits module</a></li>
@@ -153,14 +153,14 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-Data_management.data_normalization">
-<span id="data-management-data-normalization-module"></span><h2>Data_management.data_normalization module<a class="headerlink" href="#module-Data_management.data_normalization" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="data-management-data-normalization-module">
+<h2>Data_management.data_normalization module<a class="headerlink" href="#data-management-data-normalization-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-Data_management.dataset">
 <span id="data-management-dataset-module"></span><h2>Data_management.dataset module<a class="headerlink" href="#module-Data_management.dataset" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="Data_management.dataset.GenericDataset">
-<em class="property">class </em><code class="sig-name descname">GenericDataset</code><span class="sig-paren">(</span><em class="sig-param">depth_names</em>, <em class="sig-param">is_train=True</em><span class="sig-paren">)</span><a class="headerlink" href="#Data_management.dataset.GenericDataset" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">GenericDataset</code><span class="sig-paren">(</span><em class="sig-param">depth_names</em>, <em class="sig-param">is_train=True</em>, <em class="sig-param">transforms=None</em><span class="sig-paren">)</span><a class="headerlink" href="#Data_management.dataset.GenericDataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
 <p>Reads and augments the dataset images according to its tate and parameters. Base generic class implementing the common methods.</p>
 <dl class="field-list simple">
@@ -168,6 +168,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>(</strong><strong>list</strong><strong>)</strong> (<em>depth_names</em>) – List of the depth images paths</p></li>
 <li><p><strong>(</strong><strong>boolean</strong><strong>)</strong> (<em>is_train</em>) – Load images for train/inference</p></li>
+<li><p><strong>(</strong><strong>albumentation</strong><strong> or </strong><strong>str</strong><strong>)</strong> (<em>transforms</em>) – Loads augmentator config from path if str and sets it to attr transforms</p></li>
 </ul>
 </dd>
 </dl>
@@ -175,7 +176,7 @@
 
 <dl class="class">
 <dt id="Data_management.dataset.NYUDataset">
-<em class="property">class </em><code class="sig-name descname">NYUDataset</code><span class="sig-paren">(</span><em class="sig-param">depth_names</em>, <em class="sig-param">is_train=True</em><span class="sig-paren">)</span><a class="headerlink" href="#Data_management.dataset.NYUDataset" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">NYUDataset</code><span class="sig-paren">(</span><em class="sig-param">depth_names</em>, <em class="sig-param">is_train=True</em>, <em class="sig-param">transforms=None</em><span class="sig-paren">)</span><a class="headerlink" href="#Data_management.dataset.NYUDataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#Data_management.dataset.GenericDataset" title="Data_management.dataset.GenericDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data_management.dataset.GenericDataset</span></code></a></p>
 <p>Reads and augments the dataset images according to its tate and parameters. NYU dataloader implementation
 .. attribute:: depth_names</p>

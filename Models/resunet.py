@@ -22,7 +22,7 @@ class RGBDepth_Depth(nn.Module):
     :ivar is_train (boolean): Load images for train/inference 
     :ivar transforms (albumentation or str): Loads augmentator config from path if str and sets it to attr transforms
     """
-    def __init__(self, n_class):
+    def __init__(self, n_class = 1):
         super().__init__()
         # Pretrained resnet
         self.base_model = models.resnet18(pretrained=True)
