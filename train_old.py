@@ -14,6 +14,15 @@ matplotlib.use('Agg')
 matplotlib.rcParams['agg.path.chunksize'] = 10000
 from matplotlib import path, rcParams
 import matplotlib.pyplot as plt
+import albumentations as A
+from albumentations import (
+    HorizontalFlip, IAAPerspective, ShiftScaleRotate, CLAHE, RandomRotate90,
+    Transpose, ShiftScaleRotate, Blur, OpticalDistortion, GridDistortion, HueSaturationValue,
+    IAAAdditiveGaussianNoise, GaussNoise, MotionBlur, MedianBlur, IAAPiecewiseAffine,
+    IAASharpen, IAAEmboss, RandomBrightnessContrast, Flip, OneOf, Compose
+)
+from albumentations.pytorch import ToTensor
+
 
 # Save predictions
 def save_predictions(prediction, rgb, depth, name = 'test'):

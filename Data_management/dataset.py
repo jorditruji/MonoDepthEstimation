@@ -3,7 +3,6 @@ import torch
 from torch.utils import data
 import numpy as np
 import time
-from torchvision import transforms
 from PIL import Image
 import torch.nn as nn
 import torch.nn.functional as F
@@ -28,6 +27,10 @@ Max depth(uint16): 9998 \
 Min depth(uint16) : 264 \
 Mean RGB: [0.4944742  0.4425867  0.38153833] \
 Std RGB: [0.23055981 0.22284868 0.21425385] '
+
+'RECORDATORI nyu_V2 dataset: \
+[0.48958883 0.41837043 0.39797969] \
+[0.26429949 0.2728771  0.28336788]'
 
 def read_image(file):
     '''
@@ -123,6 +126,8 @@ class NYUDataset(GenericDataset):
 
     def read_depth(self, file):
         image = cv2.imread(file, -cv2.IMREAD_ANYDEPTH)
+        image = np.asarray(image, dtype = float)
+        image = (image-np.min(image))/(np.max(image)-np.min(image))
         return image        
 
 
