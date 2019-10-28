@@ -109,11 +109,33 @@ class GradLoss(nn.Module):
 # Instantiate a model and dataset
 net = RGBDepth_Depth()
 
+# Transforms train
+train_trans = Compose(RandomCrop(300,500),
+        Resize(240, 320),
+        HueSaturationValue(hue_shift_limit=15, sat_shift_limit=20, 
+            val_shift_limit=15, p=0.5),
+        HorizontalFlip(p=0.5),
+        Normalize(
+         mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225]),
+        ToTensor()
+    )
+
+
+test_trans = Compose(Resize(240, 320),
+        Normalize(
+         mean=[0.48958883,0.41837043, 0.39797969],
+            std=[0.26429949, 0.2728771,  0.28336788]),
+        ToTensor()
+    )
 
 depths = np.load('Data_management/NYU_partitions0.npy', allow_pickle=True).item()
 #depths = ['Test_samples/frame-000000.depth.pgm','Test_samples/frame-000025.depth.pgm','Test_samples/frame-000050.depth.pgm','Test_samples/frame-000075.depth.pgm']
 dataset = NYUDataset(depths['train'], is_train = True, transforms=None)
 dataset_val = dataset = NYUDataset(depths['val'], is_train = False, transforms=None)
+
+
+
 
 # dataset = Dataset(np.load('Data_management/dataset.npy').item()['train'][1:20])
 # Parameters
