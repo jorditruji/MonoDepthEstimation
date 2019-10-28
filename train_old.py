@@ -192,8 +192,8 @@ for epoch in range(16):
 
         #Forward
         predicts, grads = net(inputs,outputs)
-        print("inputs: depth {} rgb {}".format(inputs.size(), outputs.size()))
-        print("outputs: depth {} grad {}".format(predicts.size(), grads.size()))
+        #print("inputs: depth {} rgb {}".format(inputs.size(), outputs.size()))
+        #print("outputs: depth {} grad {}".format(predicts.size(), grads.size()))
            
         #Backward+update weights
         depth_loss = depth_criterion(predicts, outputs) #+ depth_criterion(predicts[1], outputs)
@@ -218,14 +218,18 @@ for epoch in range(16):
             print("TRAIN: [epoch %2d][iter %4d] loss: %.4f" \
             % (epoch, cont, depth_loss.item()))
             print("Mani: {}, depth:{}, gradient{}".format(0.075*embed_lose, depth_loss, gradie_loss))
+        break
     if epoch%1==0:
+        print(predicts.size())
+        print(predicts[0].shape)
+        print(rgbs.size())
         predict_depth = predicts[0].detach().cpu()
         #np.save('pspnet'+str(epoch), saver)
         save_predictions(predict_depth[0].detach(), rgbs[0], outputs[0],name ='unet_train1_epoch_'+str(epoch))
         #predict_depth = predicts[1].detach().cpu()
         #np.save('pspnet'+str(epoch), saver)
-        save_predictions(predict_depth[1].detach(), rgbs[1], outputs[1],name ='unet_train2_epoch_'+str(epoch))
-    break
+        save_predictions(predicts[1][0].detach().cpu(), rgbs[1], outputs[1],name ='unet_train2_epoch_'+str(epoch))
+   
 
     loss_train = loss_train/dataset.__len__()
     print("\n FINISHED TRAIN epoch %2d with loss: %.4f " % (epoch, loss_train ))
@@ -258,6 +262,7 @@ for epoch in range(16):
             
             #scheduler.step()
         if epoch%1==0:
+            print(predicts.size(), predicts[0].size())
             predict_depth = predicts[0].detach().cpu()
             #np.save('pspnet'+str(epoch), saver)
             save_predictions(predict_depth[0].detach(), rgbs[0], outputs[0],name ='unet1_epoch_'+str(epoch))
@@ -269,12 +274,12 @@ for epoch in range(16):
         loss_val = loss_val/dataset_val.__len__()
         history_val.append(loss_val)
         print("\n FINISHED VAL epoch %2d with loss: %.4f " % (epoch, loss_val ))
-        
+        break
     if loss_val< best_loss and epoch>6:
         best_loss = depth_loss
         best_model_wts = copy.deepcopy(net.state_dict())
         torch.save(net.state_dict(), 'model_unet_V2')
-    break
+    
 
 
 
