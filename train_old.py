@@ -110,10 +110,10 @@ class GradLoss(nn.Module):
 net = RGBDepth_Depth()
 
 
-depths = np.load('Data_management/NYU_partitions0.npy').item()
+depths = np.load('Data_management/NYU_partitions0.npy', allow_pickle=True).item()
 #depths = ['Test_samples/frame-000000.depth.pgm','Test_samples/frame-000025.depth.pgm','Test_samples/frame-000050.depth.pgm','Test_samples/frame-000075.depth.pgm']
-dataset = Dataset(depths['train'], is_train = True, transforms=None)
-dataset_val = dataset = NYUDataset(epths['val'], is_train = False, transforms=None)
+dataset = NYUDataset(depths['train'], is_train = True, transforms=None)
+dataset_val = dataset = NYUDataset(depths['val'], is_train = False, transforms=None)
 
 # dataset = Dataset(np.load('Data_management/dataset.npy').item()['train'][1:20])
 # Parameters
