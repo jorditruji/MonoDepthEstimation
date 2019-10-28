@@ -28,9 +28,10 @@ from albumentations.pytorch import ToTensor
 def save_predictions(prediction, rgb, depth, name = 'test'):
     # Matplotlib style display = channels last
     inp = rgb.numpy().transpose((1, 2, 0))
-    mean = np.array([0.4944742,  0.4425867,  0.38153833])
-    std = np.array([0.23055981, 0.22284868, 0.21425385])
-    # inp = std * inp + mean
+    print(inp.shape)
+    mean = np.array([0.48958883, 0.41837043, 0.39797969])
+    std = np.array([0.26429949, 0.2728771,  0.28336788])
+    inp = std * inp + mean
     plt.subplot(3,1,1)
     plt.imshow(inp)
     plt.title("RGB")
