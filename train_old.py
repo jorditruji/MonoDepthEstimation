@@ -110,7 +110,7 @@ class GradLoss(nn.Module):
 net = RGBDepth_Depth()
 
 # Transforms train
-train_trans = Compose(RandomCrop(300,500),
+train_trans = Compose([RandomCrop(300,500),
         Resize(240, 320),
         HueSaturationValue(hue_shift_limit=15, sat_shift_limit=20, 
             val_shift_limit=15, p=0.5),
@@ -118,15 +118,15 @@ train_trans = Compose(RandomCrop(300,500),
         Normalize(
          mean=[0.485, 0.456, 0.406],
             std=[0.229, 0.224, 0.225]),
-        ToTensor()
+        ToTensor()]
     )
 
 
-test_trans = Compose(Resize(240, 320),
+test_trans = Compose([Resize(240, 320),
         Normalize(
          mean=[0.48958883,0.41837043, 0.39797969],
             std=[0.26429949, 0.2728771,  0.28336788]),
-        ToTensor()
+        ToTensor()]
     )
 
 depths = np.load('Data_management/NYU_partitions0.npy', allow_pickle=True).item()
