@@ -63,7 +63,7 @@ class GenericDataset(data.Dataset):
     """
     def __init__(self, depth_names, transforms = None):
         # Paths to dataset samples
-        self.is_train = is_train 
+        #self.is_train = is_train 
         self.depth_frames = depth_names 
         self.transforms = transforms
         self.RGB_frames = self._depth2RGB()
@@ -150,7 +150,7 @@ class NYUDataset(GenericDataset):
         rgb = read_image(self.RGB_frames[index])
 
         sample =  {"image": np.array(rgb), "mask": depth}
-        augmented = self.transforms(**data)
+        augmented = self.transforms(**sample)
         rgb, depth  = augmented['image'], augmented['mask'] 
 
 
