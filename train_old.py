@@ -191,6 +191,8 @@ for epoch in range(16):
 
         #Forward
         predicts, grads = net(inputs,outputs)
+        print("inputs: depth {} rgb {}".format(inputs.size, outputs.size))
+        print("outputs: depth {} grad {}".format(predicts.size, grads.size))
            
         #Backward+update weights
         depth_loss = depth_criterion(predicts[0], outputs) #+ depth_criterion(predicts[1], outputs)
