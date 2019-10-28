@@ -202,7 +202,7 @@ for epoch in range(16):
         if epoch > 4:
             real_grad = net.imgrad(outputs)
             print("Real grad {}".format(readl_grad.size()))
-            gradie_loss = grad_loss(grads[0], real_grad)#+ grad_loss(grads[1], real_grad)
+            gradie_loss = grad_loss(grads, real_grad)#+ grad_loss(grads[1], real_grad)
         #normal_loss = normal_loss(predict_grad, real_grad) * (epoch>7)
 
         # Manifold loss
