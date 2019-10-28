@@ -191,16 +191,17 @@ for epoch in range(16):
 
         #Forward
         predicts, grads = net(inputs,outputs)
-        print("inputs: depth {} rgb {}".format(inputs.size, outputs.size))
-        print("outputs: depth {} grad {}".format(predicts.size, grads.size))
+        print("inputs: depth {} rgb {}".format(inputs.size(), outputs.size()))
+        print("outputs: depth {} grad {}".format(predicts.size(), grads.size()))
            
         #Backward+update weights
-        depth_loss = depth_criterion(predicts[0], outputs) #+ depth_criterion(predicts[1], outputs)
+        depth_loss = depth_criterion(predicts, outputs) #+ depth_criterion(predicts[1], outputs)
         
         # Grad loss
         gradie_loss = 0.
         if epoch > 4:
             real_grad = net.imgrad(outputs)
+            print("Real grad {}".format(readl_grad.size()))
             gradie_loss = grad_loss(grads[0], real_grad)#+ grad_loss(grads[1], real_grad)
         #normal_loss = normal_loss(predict_grad, real_grad) * (epoch>7)
 
