@@ -150,7 +150,7 @@ class NYUDataset(GenericDataset):
         depth = self.read_depth(self.depth_frames[index])
         rgb = read_image(self.RGB_frames[index])
 
-        print("Pre augmentation: IMG {}, depth {}".format(depth.shape, rgb.shape))
+        print("Pre augmentation: IMG {}, depth {}".format( rgb.size, depth.shape))
         sample =  {"image": np.array(rgb), "mask": depth}
         augmented = self.transforms(**sample)
         rgb, depth  = augmented['image'], augmented['mask'] 
