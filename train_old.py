@@ -15,11 +15,11 @@ matplotlib.rcParams['agg.path.chunksize'] = 10000
 from matplotlib import path, rcParams
 import matplotlib.pyplot as plt
 import albumentations as A
-from albumentations import (
+from albumentations import (Resize, Normalize,
     HorizontalFlip, IAAPerspective, ShiftScaleRotate, CLAHE, RandomRotate90,
     Transpose, ShiftScaleRotate, Blur, OpticalDistortion, GridDistortion, HueSaturationValue,
     IAAAdditiveGaussianNoise, GaussNoise, MotionBlur, MedianBlur, IAAPiecewiseAffine,
-    IAASharpen, IAAEmboss, RandomBrightnessContrast, Flip, OneOf, Compose
+    IAASharpen, IAAEmboss, RandomBrightnessContrast, Flip, OneOf, Compose, RandomCrop
 )
 from albumentations.pytorch import ToTensor
 
