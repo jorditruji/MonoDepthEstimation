@@ -131,8 +131,8 @@ test_trans = Compose(Resize(240, 320),
 
 depths = np.load('Data_management/NYU_partitions0.npy', allow_pickle=True).item()
 #depths = ['Test_samples/frame-000000.depth.pgm','Test_samples/frame-000025.depth.pgm','Test_samples/frame-000050.depth.pgm','Test_samples/frame-000075.depth.pgm']
-dataset = NYUDataset(depths['train'], is_train = True, transforms=train_trans)
-dataset_val = NYUDataset(depths['val'], is_train = False, transforms=test_trans)
+dataset = NYUDataset(depths['train'],  transforms=train_trans)
+dataset_val = NYUDataset(depths['val'],  transforms=test_trans)
 
 
 

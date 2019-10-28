@@ -61,7 +61,7 @@ class GenericDataset(data.Dataset):
     :ivar is_train (boolean): Load images for train/inference 
     :ivar transforms (albumentation or str): Loads augmentator config from path if str and sets it to attr transforms
     """
-    def __init__(self, depth_names, is_train = True, transforms = None):
+    def __init__(self, depth_names, transforms = None):
         # Paths to dataset samples
         self.is_train = is_train 
         self.depth_frames = depth_names 
@@ -128,6 +128,7 @@ class NYUDataset(GenericDataset):
         image = cv2.imread(file, -cv2.IMREAD_ANYDEPTH)
         image = np.asarray(image, dtype = float)
         image = (image-np.min(image))/(np.max(image)-np.min(image))
+        
         return image        
 
 
@@ -148,10 +149,9 @@ class NYUDataset(GenericDataset):
         depth = self.read_depth(self.depth_frames[index])
         rgb = read_image(self.RGB_frames[index])
 
-        if self.is_train:
-            sample =  {"image": rgb, "mask": depth}
-            augmented = self.transforms(**data)
-            rgb, depth  = augmented['image'], augmented['mask'] 
+        sample =  {"image": rgb, "mask": depth}
+        augmented = self.transforms(**data)
+        rgb, depth  = augmented['image'], augmented['mask'] 
 
 
         return depth, rgb, self.depth_frames[index]
