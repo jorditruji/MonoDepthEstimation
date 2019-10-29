@@ -33,14 +33,19 @@ def save_predictions(prediction, rgb, depth, name = 'test'):
     std = np.array([0.26429949, 0.2728771,  0.28336788])
     inp = std * inp + mean
     plt.subplot(3,1,1)
+    plt.axis('off')
     plt.imshow(inp)
     plt.title("RGB")
     #Depth
     plt.subplot(3,1,2)
+    plt.axis('off')
+
     plt.imshow(np.squeeze(depth.cpu().numpy()), 'gray', interpolation='nearest')
     plt.title("Ground truth")
 
     plt.subplot(3,1,3)
+    plt.axis('off')
+
     plt.imshow(np.squeeze(prediction.cpu().numpy()), 'gray', interpolation='nearest')
     plt.title("Prediction")
 
@@ -77,18 +82,18 @@ class RMSE_log(nn.Module):
 class NormalLoss(nn.Module):
     def __init__(self):
         super(NormalLoss, self).__init__()
-    
+
     def forward(self, grad_fake, grad_real):
         prod = ( grad_fake[:,:,None,:] @ grad_real[:,:,:,None] ).squeeze(-1).squeeze(-1)
         fake_norm = torch.sqrt( torch.sum( grad_fake**2, dim=-1 ) )
         real_norm = torch.sqrt( torch.sum( grad_real**2, dim=-1 ) )
-        
+
         return 1 - torch.mean( prod/(fake_norm*real_norm) )
 
 class RMSE(nn.Module):
     def __init__(self):
         super(RMSE, self).__init__()
-    
+
     def forward(self, fake, real):
         if not fake.shape == real.shape:
             _,_,H,W = real.shape
@@ -202,7 +207,7 @@ for epoch in range(16):
         gradie_loss = 0.
         if epoch > 4:
             real_grad = net.imgrad(outputs)
-            print("Real grad {}".format(readl_grad.size()))
+            print("Real grad {}".format(real_grad.size()))
             gradie_loss = grad_loss(grads, real_grad)#+ grad_loss(grads[1], real_grad)
         #normal_loss = normal_loss(predict_grad, real_grad) * (epoch>7)
 
@@ -259,7 +264,7 @@ for epoch in range(16):
             if cont%250 == 0:
                 print("VAL: [epoch %2d][iter %4d] loss: %.4f" \
                 % (epoch, cont, depth_loss))   
-            
+            break
             #scheduler.step()
         if epoch%1==0:
             print(predicts.size(), predicts[0].size())
@@ -268,13 +273,13 @@ for epoch in range(16):
             save_predictions(predict_depth[0].detach(), rgbs[0], outputs[0],name ='unet1_epoch_'+str(epoch))
             #predict_depth = predicts[1].detach().cpu()
             #np.save('pspnet'+str(epoch), saver)
-            save_predictions(predict_depth[1].detach(), rgbs[1], outputs[1],name ='unet2_epoch_'+str(epoch))
+            save_predictions(predicts[1][0].detach().cpu(), rgbs[1], outputs[1],name ='unet2_epoch_'+str(epoch))
 
 
         loss_val = loss_val/dataset_val.__len__()
         history_val.append(loss_val)
         print("\n FINISHED VAL epoch %2d with loss: %.4f " % (epoch, loss_val ))
-        break
+
     if loss_val< best_loss and epoch>6:
         best_loss = depth_loss
         best_model_wts = copy.deepcopy(net.state_dict())
