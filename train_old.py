@@ -122,8 +122,8 @@ train_trans = Compose([RandomCrop(300,500),
             val_shift_limit=15, p=0.5),
         HorizontalFlip(p=0.5),
         Normalize(
-         mean=[0.485, 0.456, 0.406],
-            std=[0.229, 0.224, 0.225]),
+         mean=[0.48958883,0.41837043, 0.39797969],
+            std=[0.26429949, 0.2728771,  0.28336788]),
         ToTensor()]
     )
 
@@ -137,6 +137,8 @@ test_trans = Compose([Resize(240, 320),
 
 depths = np.load('Data_management/NYU_partitions0.npy', allow_pickle=True).item()
 #depths = ['Test_samples/frame-000000.depth.pgm','Test_samples/frame-000025.depth.pgm','Test_samples/frame-000050.depth.pgm','Test_samples/frame-000075.depth.pgm']
+
+train_depths = [depth for depth in depths['train'] if 'NYUstudy_0002_out/study_00026depth' not in depth]
 dataset = NYUDataset(depths['train'],  transforms=train_trans)
 dataset_val = NYUDataset(depths['val'],  transforms=test_trans)
 
