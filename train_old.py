@@ -147,11 +147,11 @@ dataset_val = NYUDataset(depths['val'],  transforms=test_trans)
 # Parameters
 params = {'batch_size': 16 ,
           'shuffle': True,
-          'num_workers': 12,
+          'num_workers': 16,
           'pin_memory': True}
 params_test = {'batch_size': 16 ,
           'shuffle': False,
-          'num_workers': 12,
+          'num_workers': 16,
           'pin_memory': True}
 
 
@@ -176,13 +176,16 @@ net = net.to(device)
 optimizer_ft = optim.Adam(net.parameters(), lr=1e-4, betas=(0.9, 0.999), eps=1e-08, weight_decay=4e-5)
 #scheduler = optim.lr_scheduler.StepLR(optimizer_ft, step_size=100, gamma=0.1)
 loss_list = []
+grads_train_loss = []
+grads_val_loss = []
 history_val = []
 best_loss = 50
-for epoch in range(16):
+for epoch in range(20):
     # Train
     net.train()
     cont = 0
     loss_train = 0.0
+    grads_loss = 0.0
 
     for depths, rgbs, filename in training_generator:
         cont+=1
@@ -209,6 +212,7 @@ for epoch in range(16):
             real_grad = net.imgrad(outputs)
             print("Real grad {}".format(real_grad.size()))
             gradie_loss = grad_loss(grads, real_grad)#+ grad_loss(grads[1], real_grad)
+            grads_train_loss+=gradie_loss.item()*inputs.size(0)
         #normal_loss = normal_loss(predict_grad, real_grad) * (epoch>7)
 
         # Manifold loss
@@ -223,7 +227,6 @@ for epoch in range(16):
             print("TRAIN: [epoch %2d][iter %4d] loss: %.4f" \
             % (epoch, cont, depth_loss.item()))
             print("Mani: {}, depth:{}, gradient{}".format(0.075*embed_lose, depth_loss, gradie_loss))
-        break
     if epoch%1==0:
         print(predicts.size())
         print(predicts[0].shape)
@@ -237,9 +240,12 @@ for epoch in range(16):
    
 
     loss_train = loss_train/dataset.__len__()
+    grads_loss = grads_loss/dataset.__len__()
+ 
     print("\n FINISHED TRAIN epoch %2d with loss: %.4f " % (epoch, loss_train ))
     # Val
     loss_list.append(loss_train)
+    grads_train_loss.append(grads_loss)
     net.eval()
     loss_val = 0.0
     cont = 0
@@ -264,7 +270,6 @@ for epoch in range(16):
             if cont%250 == 0:
                 print("VAL: [epoch %2d][iter %4d] loss: %.4f" \
                 % (epoch, cont, depth_loss))   
-            break
             #scheduler.step()
         if epoch%1==0:
             print(predicts.size(), predicts[0].size())
@@ -283,12 +288,10 @@ for epoch in range(16):
     if loss_val< best_loss and epoch>6:
         best_loss = depth_loss
         best_model_wts = copy.deepcopy(net.state_dict())
-        torch.save(net.state_dict(), 'model_unet_V2')
-    
+        torch.save({'model': net.state_dict(), 'optim':optimizer_ft.state_dict() }, 'model_unet_V2')
+        np.save('loss_unet',loss_list)
+        np.save('loss_val_unet',history_val)
+        np.save('grads_train_loss', grads_train_loss)
 
 
 
-
-
-np.save('loss_unet',loss_list)
-np.save('loss_val_unet',history_val)
