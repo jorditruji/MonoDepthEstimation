@@ -22,6 +22,17 @@ from albumentations import (Resize, Normalize,
     IAASharpen, IAAEmboss, RandomBrightnessContrast, Flip, OneOf, Compose, RandomCrop
 )
 from albumentations.pytorch import ToTensor
+import numpy as np
+
+class DepthScale(BasicTransform):
+    """Transform applied to image only."""
+
+    @property
+    def targets(self):
+        return {"mask": self.apply_to_mask}
+
+    def apply_to_mask(self, img, **params):
+        return (img-np.min(img))/(np.max(img)-np.min(img))
 
 
 # Save predictions
