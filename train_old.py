@@ -139,7 +139,7 @@ depths = np.load('Data_management/NYU_partitions0.npy', allow_pickle=True).item(
 #depths = ['Test_samples/frame-000000.depth.pgm','Test_samples/frame-000025.depth.pgm','Test_samples/frame-000050.depth.pgm','Test_samples/frame-000075.depth.pgm']
 
 train_depths = [depth for depth in depths['train'] if 'NYUstudy_0002_out/study_00026depth' not in depth]
-dataset = NYUDataset(depths['train'],  transforms=train_trans)
+dataset = NYUDataset(train_depths,  transforms=train_trans)
 dataset_val = NYUDataset(depths['val'],  transforms=test_trans)
 
 
@@ -214,7 +214,7 @@ for epoch in range(20):
             real_grad = net.imgrad(outputs)
             print("Real grad {}".format(real_grad.size()))
             gradie_loss = grad_loss(grads, real_grad)#+ grad_loss(grads[1], real_grad)
-            grads_train_loss+=gradie_loss.item()*inputs.size(0)
+            grads_loss+=gradie_loss.item()*inputs.size(0)
         #normal_loss = normal_loss(predict_grad, real_grad) * (epoch>7)
 
         # Manifold loss
