@@ -23,6 +23,7 @@ from albumentations import (Resize, Normalize,
 )
 from albumentations.pytorch import ToTensor
 import numpy as np
+from albumentations.core.transforms_interface import BasicTransform
 
 class DepthScale(BasicTransform):
     """Transform applied to image only."""
@@ -127,8 +128,9 @@ class GradLoss(nn.Module):
 net = RGBDepth_Depth()
 
 # Transforms train
-train_trans = Compose([RandomCrop(300,500),
+train_trans = Compose([RandomCrop(360,480),
         Resize(240, 320),
+        DepthScale(),
         HueSaturationValue(hue_shift_limit=15, sat_shift_limit=20, 
             val_shift_limit=15, p=0.5),
         HorizontalFlip(p=0.5),
@@ -139,10 +141,11 @@ train_trans = Compose([RandomCrop(300,500),
     )
 
 
-test_trans = Compose([Resize(240, 320),
+test_trans = Compose([Resize(360,480),
         Normalize(
          mean=[0.48958883,0.41837043, 0.39797969],
             std=[0.26429949, 0.2728771,  0.28336788]),
+        DepthScale(),
         ToTensor()]
     )
 
