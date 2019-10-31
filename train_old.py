@@ -215,7 +215,7 @@ for epoch in range(20):
         # Get items from generator
         inputs, outputs = rgbs.cuda(), depths.cuda()
 
-        print(torch.max(outputs.view(input.size(0), -1)))
+        #print(torch.max(outputs.view(input.size(0), -1)))
 
         # Clean grads
         optimizer_ft.zero_grad()
@@ -243,7 +243,7 @@ for epoch in range(20):
         embed_lose = 0#mani_loss(manifolds[0],manifolds[1])
 
         loss = depth_loss + 12*gradie_loss #+0.045*embed_lose# + normal_loss
-        writer.add_scalar('Loss/train_real_loss', gradie_loss.item(), _i)
+        writer.add_scalar('Loss/train_real_loss', loss.item(), _i)
 
         loss.backward()
         optimizer_ft.step()

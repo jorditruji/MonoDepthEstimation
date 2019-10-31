@@ -151,6 +151,7 @@ class NYUDataset(GenericDataset):
         augmented = self.transforms(**sample)
         rgb, depth  = augmented['image'], augmented['mask'] 
         #print("augmented", depth)
+        #print(depth)
         print("{} seconds for reading sample.".format(time.time()-start_time))
         return depth, rgb, self.depth_frames[index]
 
