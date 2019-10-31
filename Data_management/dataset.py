@@ -4,12 +4,6 @@ from torch.utils import data
 import numpy as np
 import time
 from PIL import Image
-import torch.nn as nn
-import torch.nn.functional as F
-from torch.autograd import Variable
-import pickle
-import cv2
-from PIL import Image
 import cv2
 import numpy as np
 from torch.utils.data import Dataset

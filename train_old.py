@@ -235,7 +235,7 @@ for epoch in range(20):
             real_grad = net.imgrad(outputs)
             gradie_loss = grad_loss(grads, real_grad)#+ grad_loss(grads[1], real_grad)
             grads_loss+=gradie_loss.item()*inputs.size(0)
-        writer.add_scalar('Loss/train_MAE_grad_log', gradie_loss.item(), _i)
+            writer.add_scalar('Loss/train_MAE_grad_log', gradie_loss.item(), _i)
 
         #normal_loss = normal_loss(predict_grad, real_grad) * (epoch>7)
         #cont+=1
