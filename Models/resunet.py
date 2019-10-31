@@ -102,7 +102,7 @@ class RGBDepth_Depth(nn.Module):
 
         
         # Encoder - decoder connections
-        layer4 = self.layer4_1x1(layer4)
+        #layer4 = self.layer4_1x1(layer4)
         layer3 = self.layer3_1x1(layer3)
         layer2 = self.layer2_1x1(layer2)
         layer1 = self.layer1_1x1(layer1)
