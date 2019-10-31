@@ -28,7 +28,7 @@ from albumentations.core.transforms_interface import BasicTransform
 class DepthScale(BasicTransform):
     """Transform applied to image only."""
     def __init__(self, always_apply = True, p = 1.):
-        super(Normalize, self).__init__(always_apply, p)
+        super(DepthScale, self).__init__(always_apply, p)
 
     @property
     def targets(self):
