@@ -5,6 +5,7 @@ from torchsummary import summary
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
+import time
 
 
 def convrelu(in_channels, out_channels, kernel, padding):
