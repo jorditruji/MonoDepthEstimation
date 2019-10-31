@@ -144,7 +144,7 @@ train_trans = Compose([RandomCrop(360,480),
     )
 
 
-test_trans = Compose([Resize(360,480),
+test_trans = Compose([Resize(240, 320),
         Normalize(
          mean=[0.48958883,0.41837043, 0.39797969],
             std=[0.26429949, 0.2728771,  0.28336788]),
