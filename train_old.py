@@ -27,6 +27,8 @@ from albumentations.core.transforms_interface import BasicTransform
 
 class DepthScale(BasicTransform):
     """Transform applied to image only."""
+    def __init__(self, always_apply = True, p = 1.):
+        super(Normalize, self).__init__(always_apply, p)
 
     @property
     def targets(self):
@@ -131,7 +133,7 @@ net = RGBDepth_Depth()
 # Transforms train
 train_trans = Compose([RandomCrop(360,480),
         Resize(240, 320),
-        #DepthScale(),
+        DepthScale(),
         HueSaturationValue(hue_shift_limit=15, sat_shift_limit=20, 
             val_shift_limit=15, p=0.5),
         HorizontalFlip(p=0.5),
@@ -146,7 +148,7 @@ test_trans = Compose([Resize(360,480),
         Normalize(
          mean=[0.48958883,0.41837043, 0.39797969],
             std=[0.26429949, 0.2728771,  0.28336788]),
-        #DepthScale(),
+        DepthScale(),
         ToTensor()]
     )
 
@@ -162,11 +164,11 @@ dataset_val = NYUDataset(depths['val'],  transforms=test_trans)
 
 # dataset = Dataset(np.load('Data_management/dataset.npy').item()['train'][1:20])
 # Parameters
-params = {'batch_size': 20 ,
+params = {'batch_size': 18 ,
           'shuffle': True,
           'num_workers': 8,
           'pin_memory': True}
-params_test = {'batch_size': 20 ,
+params_test = {'batch_size': 18 ,
           'shuffle': False,
           'num_workers': 8,
           'pin_memory': True}
@@ -207,11 +209,8 @@ for epoch in range(20):
     for depths, rgbs, filename in training_generator:
         #cont+=1
         # Get items from generator
-        inputs = rgbs.cuda()
+        inputs, outputs = rgbs.cuda(), depths.cuda()
 
-        # We wont use depths until the RGB is forwarded,
-        # so it can be parallelized with computation
-        outputs = depths.cuda()
         # Clean grads
         optimizer_ft.zero_grad()
 
@@ -227,7 +226,6 @@ for epoch in range(20):
         gradie_loss = 0.
         if epoch > 4:
             real_grad = net.imgrad(outputs)
-            print("Real grad {}".format(real_grad.size()))
             gradie_loss = grad_loss(grads, real_grad)#+ grad_loss(grads[1], real_grad)
             grads_loss+=gradie_loss.item()*inputs.size(0)
         #normal_loss = normal_loss(predict_grad, real_grad) * (epoch>7)
@@ -251,10 +249,10 @@ for epoch in range(20):
         print(rgbs.size())
         predict_depth = predicts[0].detach().cpu()
         #np.save('pspnet'+str(epoch), saver)
-        save_predictions(predict_depth[0].detach(), rgbs[0], outputs[0],name ='unet_train1_epoch_'+str(epoch))
+        save_predictions(predict_depth[0].detach(), rgbs[0], outputs[0],name ='unet2_train1_epoch_'+str(epoch))
         #predict_depth = predicts[1].detach().cpu()
         #np.save('pspnet'+str(epoch), saver)
-        save_predictions(predicts[1][0].detach().cpu(), rgbs[1], outputs[1],name ='unet_train2_epoch_'+str(epoch))
+        save_predictions(predicts[1][0].detach().cpu(), rgbs[1], outputs[1],name ='unet2_train2_epoch_'+str(epoch))
    
 
     loss_train = loss_train/dataset.__len__()
