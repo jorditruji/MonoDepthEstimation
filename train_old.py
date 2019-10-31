@@ -210,7 +210,7 @@ for epoch in range(20):
     loss_train = 0.0
     grads_loss = 0.0
 
-    for _i(depths, rgbs, filename) in enumerate(training_generator):
+    for _i, (depths, rgbs, filename) in enumerate(training_generator):
         #cont+=1
         # Get items from generator
         inputs, outputs = rgbs.cuda(), depths.cuda()
@@ -277,7 +277,7 @@ for epoch in range(20):
 
     # We dont need to track gradients here, so let's save some memory and time
     with torch.no_grad():
-        for _i(depths, rgbs, filename) in enumerate(val_generator):
+        for _i, (depths, rgbs, filename) in enumerate(val_generator):
             cont+=1
             # Get items from generator
             inputs = rgbs.cuda()
