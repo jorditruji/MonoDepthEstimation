@@ -33,6 +33,7 @@ class DepthScale(BasicTransform):
         return {"mask": self.apply_to_mask}
 
     def apply_to_mask(self, img, **params):
+        #print(img.shape)
         return (img-np.min(img))/(np.max(img)-np.min(img))
 
 
@@ -130,7 +131,7 @@ net = RGBDepth_Depth()
 # Transforms train
 train_trans = Compose([RandomCrop(360,480),
         Resize(240, 320),
-        DepthScale(),
+        #DepthScale(),
         HueSaturationValue(hue_shift_limit=15, sat_shift_limit=20, 
             val_shift_limit=15, p=0.5),
         HorizontalFlip(p=0.5),
@@ -145,7 +146,7 @@ test_trans = Compose([Resize(360,480),
         Normalize(
          mean=[0.48958883,0.41837043, 0.39797969],
             std=[0.26429949, 0.2728771,  0.28336788]),
-        DepthScale(),
+        #DepthScale(),
         ToTensor()]
     )
 
@@ -161,13 +162,13 @@ dataset_val = NYUDataset(depths['val'],  transforms=test_trans)
 
 # dataset = Dataset(np.load('Data_management/dataset.npy').item()['train'][1:20])
 # Parameters
-params = {'batch_size': 16 ,
+params = {'batch_size': 20 ,
           'shuffle': True,
-          'num_workers': 16,
+          'num_workers': 8,
           'pin_memory': True}
-params_test = {'batch_size': 16 ,
+params_test = {'batch_size': 20 ,
           'shuffle': False,
-          'num_workers': 16,
+          'num_workers': 8,
           'pin_memory': True}
 
 
@@ -204,7 +205,7 @@ for epoch in range(20):
     grads_loss = 0.0
 
     for depths, rgbs, filename in training_generator:
-        cont+=1
+        #cont+=1
         # Get items from generator
         inputs = rgbs.cuda()
 
@@ -230,7 +231,7 @@ for epoch in range(20):
             gradie_loss = grad_loss(grads, real_grad)#+ grad_loss(grads[1], real_grad)
             grads_loss+=gradie_loss.item()*inputs.size(0)
         #normal_loss = normal_loss(predict_grad, real_grad) * (epoch>7)
-
+        #cont+=1
         # Manifold loss
         embed_lose = 0#mani_loss(manifolds[0],manifolds[1])
 
@@ -243,6 +244,7 @@ for epoch in range(20):
             print("TRAIN: [epoch %2d][iter %4d] loss: %.4f" \
             % (epoch, cont, depth_loss.item()))
             print("Mani: {}, depth:{}, gradient{}".format(0.075*embed_lose, depth_loss, gradie_loss))
+        cont+=1    
     if epoch%1==0:
         print(predicts.size())
         print(predicts[0].shape)

@@ -128,7 +128,7 @@ class NYUDataset(GenericDataset):
         image = cv2.imread(file, -cv2.IMREAD_ANYDEPTH)
 
         image = np.asarray(image, dtype = float)
-        #image = (image-np.min(image))/(np.max(image)-np.min(image))
+        image = (image-np.min(image))/(np.max(image)-np.min(image))
 
         return image        
 
@@ -151,9 +151,10 @@ class NYUDataset(GenericDataset):
         rgb = np.asarray(read_image(self.RGB_frames[index]))
 
         sample =  {"image": rgb, "mask": depth}
+        #print("Augmenting", depth)   
         augmented = self.transforms(**sample)
         rgb, depth  = augmented['image'], augmented['mask'] 
-
+        #print("augmented", depth)
         return depth, rgb, self.depth_frames[index]
 
 
