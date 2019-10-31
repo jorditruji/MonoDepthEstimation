@@ -22,7 +22,8 @@ class RGBDepth_Depth(nn.Module):
     :ivar is_train (boolean): Load images for train/inference 
     :ivar transforms (albumentation or str): Loads augmentator config from path if str and sets it to attr transforms
     """
-    def __init__(self, n_class = 1):
+    def __init__(self, n_class = 1, dropout = True):
+        self.dropout = dropout
         super().__init__()
         # Pretrained resnet
         self.base_model = models.resnet18(pretrained=True)
@@ -75,6 +76,8 @@ class RGBDepth_Depth(nn.Module):
         self.x_sobel = self.x_sobel.cuda() if torch.cuda.is_available() else self.x_sobel
         self.y_sobel = self.y_sobel.cuda() if torch.cuda.is_available() else self.y_sobel
         self.base_layers = None # Avoid unnecessary memory
+        self.drop_1 = nn.Dropout2d(p=0.5)
+        self.drop_2 = nn.Dropout2d(p=0.15)
 
     def forward(self, input, ground_truth):
         # Intermediate channels
@@ -138,6 +141,8 @@ class RGBDepth_Depth(nn.Module):
         # Decoder depth
         
         depth_layer4 = self.layer4_1x1(depth_layer4)
+        if self.dropout:
+            depth_layer4 = self.drop_1(depth_layer4)
         depth = self.upsample_v2(depth_layer4)
 
         depth = torch.cat([depth, layer3], dim=1)

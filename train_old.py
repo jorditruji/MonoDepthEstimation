@@ -249,10 +249,10 @@ for epoch in range(20):
         print(rgbs.size())
         predict_depth = predicts[0].detach().cpu()
         #np.save('pspnet'+str(epoch), saver)
-        save_predictions(predict_depth[0].detach(), rgbs[0], outputs[0],name ='unet2_train1_epoch_'+str(epoch))
+        save_predictions(predict_depth[0].detach(), rgbs[0], outputs[0],name ='Dropped_manifold/unet2_train1_epoch_'+str(epoch))
         #predict_depth = predicts[1].detach().cpu()
         #np.save('pspnet'+str(epoch), saver)
-        save_predictions(predicts[1][0].detach().cpu(), rgbs[1], outputs[1],name ='unet2_train2_epoch_'+str(epoch))
+        save_predictions(predicts[1][0].detach().cpu(), rgbs[1], outputs[1],name ='Dropped_manifold/unet2_train2_epoch_'+str(epoch))
    
 
     loss_train = loss_train/dataset.__len__()
@@ -291,10 +291,10 @@ for epoch in range(20):
             print(predicts.size(), predicts[0].size())
             predict_depth = predicts[0].detach().cpu()
             #np.save('pspnet'+str(epoch), saver)
-            save_predictions(predict_depth[0].detach(), rgbs[0], outputs[0],name ='unet1_epoch_'+str(epoch))
+            save_predictions(predict_depth[0].detach(), rgbs[0], outputs[0],name ='Dropped_manifold/unet1_epoch_'+str(epoch))
             #predict_depth = predicts[1].detach().cpu()
             #np.save('pspnet'+str(epoch), saver)
-            save_predictions(predicts[1][0].detach().cpu(), rgbs[1], outputs[1],name ='unet2_epoch_'+str(epoch))
+            save_predictions(predicts[1][0].detach().cpu(), rgbs[1], outputs[1],name ='Dropped_manifold/unet2_epoch_'+str(epoch))
 
 
         loss_val = loss_val/dataset_val.__len__()
@@ -304,10 +304,10 @@ for epoch in range(20):
     if loss_val< best_loss and epoch>6:
         best_loss = depth_loss
         best_model_wts = copy.deepcopy(net.state_dict())
-        torch.save({'model': net.state_dict(), 'optim':optimizer_ft.state_dict() }, 'model_unet_V2')
-        np.save('loss_unet',loss_list)
-        np.save('loss_val_unet',history_val)
-        np.save('grads_train_loss', grads_train_loss)
+        torch.save({'model': net.state_dict(), 'optim':optimizer_ft.state_dict() }, 'Dropped_manifold/model_unet_V2')
+        np.save('Dropped_manifold/loss_unet',loss_list)
+        np.save('Dropped_manifold/loss_val_unet',history_val)
+        np.save('Dropped_manifold/grads_train_loss', grads_train_loss)
 
 
 
