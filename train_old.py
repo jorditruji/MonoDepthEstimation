@@ -215,7 +215,7 @@ for epoch in range(20):
         # Get items from generator
         inputs, outputs = rgbs.cuda(), depths.cuda()
 
-        print(outputs)
+        print(torch.max(outputs.view(input.size(0), -1)))
 
         # Clean grads
         optimizer_ft.zero_grad()
