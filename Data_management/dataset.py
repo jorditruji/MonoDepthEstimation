@@ -142,7 +142,7 @@ class NYUDataset(GenericDataset):
             filename (str): 
 
         """
-        start_time = time.time()
+        #start_time = time.time()
         depth = self.read_depth(self.depth_frames[index])
         rgb = np.asarray(read_image(self.RGB_frames[index]))
 
@@ -152,7 +152,7 @@ class NYUDataset(GenericDataset):
         rgb, depth  = augmented['image'], augmented['mask'] 
         #print("augmented", depth)
         #print(depth)
-        print("{} seconds for reading sample.".format(time.time()-start_time))
+        #print("{} seconds for reading sample.".format(time.time()-start_time))
         return depth, rgb, self.depth_frames[index]
 
 

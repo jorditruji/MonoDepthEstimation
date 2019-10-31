@@ -255,9 +255,6 @@ for epoch in range(20):
             print("Mani: {}, depth:{}, gradient{}".format(0.075*embed_lose, depth_loss, gradie_loss))
         cont+=1    
     if epoch%1==0:
-        print(predicts.size())
-        print(predicts[0].shape)
-        print(rgbs.size())
         predict_depth = predicts[0].detach().cpu()
         #np.save('pspnet'+str(epoch), saver)
         save_predictions(predict_depth[0].detach(), rgbs[0], outputs[0],name ='Dropped_manifold/unet2_train1_epoch_'+str(epoch))
@@ -301,7 +298,6 @@ for epoch in range(20):
                 % (epoch, cont, depth_loss))   
             #scheduler.step()
         if epoch%1==0:
-            print(predicts.size(), predicts[0].size())
             predict_depth = predicts[0].detach().cpu()
             #np.save('pspnet'+str(epoch), saver)
             save_predictions(predict_depth[0].detach(), rgbs[0], outputs[0],name ='Dropped_manifold/unet1_epoch_'+str(epoch))
