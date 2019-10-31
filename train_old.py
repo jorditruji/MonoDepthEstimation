@@ -24,6 +24,8 @@ from albumentations import (Resize, Normalize,
 from albumentations.pytorch import ToTensor
 import numpy as np
 from albumentations.core.transforms_interface import BasicTransform
+from torch.utils.tensorboard import SummaryWriter
+
 
 class DepthScale(BasicTransform):
     """Transform applied to image only."""
@@ -181,6 +183,8 @@ net.train()
 print(net)
 
 
+writer = SummaryWriter(log_dir='Logs/', comment='', purge_step=None, max_queue=100, flush_secs=120, filename_suffix='')
+
 # Loss
 depth_criterion = RMSE_log()
 grad_loss = GradLoss()
@@ -206,7 +210,7 @@ for epoch in range(20):
     loss_train = 0.0
     grads_loss = 0.0
 
-    for depths, rgbs, filename in training_generator:
+    for _i(depths, rgbs, filename) in enumerate(training_generator):
         #cont+=1
         # Get items from generator
         inputs, outputs = rgbs.cuda(), depths.cuda()
@@ -221,19 +225,24 @@ for epoch in range(20):
            
         #Backward+update weights
         depth_loss = depth_criterion(predicts, outputs) #+ depth_criterion(predicts[1], outputs)
-        
+        writer.add_scalar('Loss/train_RMSE_log', depth_loss.item(), _i)
+
         # Grad loss
         gradie_loss = 0.
         if epoch > 4:
             real_grad = net.imgrad(outputs)
             gradie_loss = grad_loss(grads, real_grad)#+ grad_loss(grads[1], real_grad)
             grads_loss+=gradie_loss.item()*inputs.size(0)
+        writer.add_scalar('Loss/train_MAE_grad_log', gradie_loss.item(), _i)
+
         #normal_loss = normal_loss(predict_grad, real_grad) * (epoch>7)
         #cont+=1
         # Manifold loss
         embed_lose = 0#mani_loss(manifolds[0],manifolds[1])
 
-        loss = depth_loss + 50*gradie_loss #+0.045*embed_lose# + normal_loss
+        loss = depth_loss + 12*gradie_loss #+0.045*embed_lose# + normal_loss
+        writer.add_scalar('Loss/train_real_loss', gradie_loss.item(), _i)
+
         loss.backward()
         optimizer_ft.step()
         loss_train+=loss.item()*inputs.size(0)
@@ -268,7 +277,7 @@ for epoch in range(20):
 
     # We dont need to track gradients here, so let's save some memory and time
     with torch.no_grad():
-        for depths, rgbs, filename in val_generator:
+        for _i(depths, rgbs, filename) in enumerate(val_generator):
             cont+=1
             # Get items from generator
             inputs = rgbs.cuda()
@@ -282,6 +291,8 @@ for epoch in range(20):
             real_grad = net.imgrad(outputs)
 
             depth_loss = depth_criterion(predicts, outputs)#+depth_criterion(predict_grad, real_grad)
+            writer.add_scalar('Loss/val_RMSE_log', depth_loss.item(), _i)
+
             loss_val+=depth_loss.item()*inputs.size(0)
             if cont%250 == 0:
                 print("VAL: [epoch %2d][iter %4d] loss: %.4f" \

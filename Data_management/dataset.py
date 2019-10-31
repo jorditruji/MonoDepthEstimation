@@ -21,6 +21,7 @@ from albumentations import (
     IAASharpen, IAAEmboss, RandomBrightnessContrast, Flip, OneOf, Compose
 )
 from albumentations.pytorch import ToTensor
+import time
 
 'RECORDATORI SCANNET dataset: \
 Max depth(uint16): 9998 \
@@ -147,6 +148,7 @@ class NYUDataset(GenericDataset):
             filename (str): 
 
         """
+        start_time = time.time()
         depth = self.read_depth(self.depth_frames[index])
         rgb = np.asarray(read_image(self.RGB_frames[index]))
 
@@ -155,6 +157,7 @@ class NYUDataset(GenericDataset):
         augmented = self.transforms(**sample)
         rgb, depth  = augmented['image'], augmented['mask'] 
         #print("augmented", depth)
+        print("{} seconds for reading sample.".format(time.time()-start_time))
         return depth, rgb, self.depth_frames[index]
 
 

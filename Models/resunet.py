@@ -81,7 +81,7 @@ class RGBDepth_Depth(nn.Module):
 
     def forward(self, input, ground_truth):
         # Intermediate channels
-
+        start_time = time.time()
         x_original = self.conv_original_size0(input)
         x_original = self.conv_original_size1(x_original)
         # Down pass RGB
@@ -164,7 +164,8 @@ class RGBDepth_Depth(nn.Module):
         depth = self.conv_original_size2(depth)        
         
         out_depth = self.conv_last(depth)
-        
+        print("{} seconds for forward pass.".format(time.time()-start_time))
+
         return out_depth, self.imgrad(out_depth)
 
         # Retornem 2 reconstruccions, els gradients de les reconstruccions i els manifolds
