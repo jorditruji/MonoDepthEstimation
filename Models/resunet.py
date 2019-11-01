@@ -142,9 +142,9 @@ class RGBDepth_Depth(nn.Module):
         # Decoder depth
         
         depth_layer4 = self.layer4_1x1(depth_layer4)
-        '''if self.dropout:
+        if self.dropout:
             depth_layer4 = self.drop_1(depth_layer4)
-        '''
+        
         depth = self.upsample_v2(depth_layer4)
 
         depth = torch.cat([depth, layer3], dim=1)

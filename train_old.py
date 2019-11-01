@@ -183,7 +183,7 @@ net.train()
 print(net)
 
 
-writer = SummaryWriter(log_dir='Logs_no_Drop/', comment='', purge_step=None, max_queue=100, flush_secs=120, filename_suffix='')
+writer = SummaryWriter(log_dir='Logs_Drop/', comment='', purge_step=None, max_queue=100, flush_secs=120, filename_suffix='')
 
 # Loss
 depth_criterion = RMSE_log()
@@ -257,10 +257,10 @@ for epoch in range(20):
     if epoch%1==0:
         predict_depth = predicts[0].detach().cpu()
         #np.save('pspnet'+str(epoch), saver)
-        save_predictions(predict_depth[0].detach(), rgbs[0], outputs[0],name ='No_dropped/unet2_train1_epoch_'+str(epoch))
+        save_predictions(predict_depth[0].detach(), rgbs[0], outputs[0],name ='Dropped/unet2_train1_epoch_'+str(epoch))
         #predict_depth = predicts[1].detach().cpu()
         #np.save('pspnet'+str(epoch), saver)
-        save_predictions(predicts[1][0].detach().cpu(), rgbs[1], outputs[1],name ='No_dropped/unet2_train2_epoch_'+str(epoch))
+        save_predictions(predicts[1][0].detach().cpu(), rgbs[1], outputs[1],name ='Dropped/unet2_train2_epoch_'+str(epoch))
    
 
     loss_train = loss_train/dataset.__len__()
@@ -300,10 +300,10 @@ for epoch in range(20):
         if epoch%1==0:
             predict_depth = predicts[0].detach().cpu()
             #np.save('pspnet'+str(epoch), saver)
-            save_predictions(predict_depth[0].detach(), rgbs[0], outputs[0],name ='No_dropped/unet1_epoch_'+str(epoch))
+            save_predictions(predict_depth[0].detach(), rgbs[0], outputs[0],name ='Dropped/unet1_epoch_'+str(epoch))
             #predict_depth = predicts[1].detach().cpu()
             #np.save('pspnet'+str(epoch), saver)
-            save_predictions(predicts[1][0].detach().cpu(), rgbs[1], outputs[1],name ='No_dropped/unet2_epoch_'+str(epoch))
+            save_predictions(predicts[1][0].detach().cpu(), rgbs[1], outputs[1],name ='Dropped/unet2_epoch_'+str(epoch))
 
 
         loss_val = loss_val/dataset_val.__len__()
@@ -313,7 +313,7 @@ for epoch in range(20):
     if loss_val< best_loss and epoch>6:
         best_loss = depth_loss
         best_model_wts = copy.deepcopy(net.state_dict())
-        torch.save({'model': net.state_dict(), 'optim':optimizer_ft.state_dict() }, 'No_dropped_manifold/model_unet_V2')
+        torch.save({'model': net.state_dict(), 'optim':optimizer_ft.state_dict() }, 'Dropped/model_unet_V2')
         #np.save('Dropped_manifold/loss_unet',loss_list)
         #np.save('Dropped_manifold/loss_val_unet',history_val)
         #np.save('Dropped_manifold/grads_train_loss', grads_train_loss)
