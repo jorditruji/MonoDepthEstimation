@@ -209,11 +209,9 @@ if __name__ == '__main__':
     # Optimizer
     optimizer_ft = optim.Adam(net.parameters(), lr=1e-4, betas=(0.9, 0.999), eps=1e-08, weight_decay=4e-5)
     #scheduler = optim.lr_scheduler.StepLR(optimizer_ft, step_size=100, gamma=0.1)
-    loss_list = []
-    grads_train_loss = []
-    grads_val_loss = []
-    history_val = []
     best_loss = 50
+    iter_train = 0
+    iter_val = 0
     for epoch in range(20):
         # Train
         net.train()
@@ -223,6 +221,7 @@ if __name__ == '__main__':
 
         for _i, (depths, rgbs, filename) in enumerate(training_generator):
             #cont+=1
+            iter_train+=1
             # Get items from generator
             inputs, outputs = rgbs.cuda(), depths.cuda()
 
@@ -238,7 +237,7 @@ if __name__ == '__main__':
                
             #Backward+update weights
             depth_loss = depth_criterion(predicts, outputs) #+ depth_criterion(predicts[1], outputs)
-            writer.add_scalar('Loss/train_RMSE_log', depth_loss.item(), _i+(epoch* dataset.__len__()))
+            writer.add_scalar('Loss/train_RMSE_log', depth_loss.item(),iter_train)
 
             # Grad loss
             gradie_loss = 0.
@@ -246,7 +245,7 @@ if __name__ == '__main__':
                 real_grad = net.imgrad(outputs)
                 gradie_loss = grad_loss(grads, real_grad)#+ grad_loss(grads[1], real_grad)
                 grads_loss+=gradie_loss.item()*inputs.size(0)
-                writer.add_scalar('Loss/train_MAE_grad_log', gradie_loss.item(),  _i+(epoch* dataset.__len__()))
+                writer.add_scalar('Loss/train_MAE_grad_log', gradie_loss.item(), iter_train)
 
             #normal_loss = normal_loss(predict_grad, real_grad) * (epoch>7)
             #cont+=1
@@ -254,7 +253,7 @@ if __name__ == '__main__':
             embed_lose = 0#mani_loss(manifolds[0],manifolds[1])
 
             loss = depth_loss + 12*gradie_loss #+0.045*embed_lose# + normal_loss
-            writer.add_scalar('Loss/train_real_loss', loss.item(),  _i+(epoch* dataset.__len__()))
+            writer.add_scalar('Loss/train_real_loss', loss.item(),  iter_train)
 
             loss.backward()
             optimizer_ft.step()
@@ -279,8 +278,6 @@ if __name__ == '__main__':
      
         print("\n FINISHED TRAIN epoch %2d with loss: %.4f " % (epoch, loss_train ))
         # Val
-        loss_list.append(loss_train)
-        grads_train_loss.append(grads_loss)
         net.eval()
         loss_val = 0.0
         cont = 0
@@ -289,6 +286,7 @@ if __name__ == '__main__':
         with torch.no_grad():
             for _i, (depths, rgbs, filename) in enumerate(val_generator):
                 cont+=1
+                iter_val+=1
                 # Get items from generator
                 inputs = rgbs.cuda()
                 # Non blocking so computation can start while labels are being loaded
@@ -301,7 +299,7 @@ if __name__ == '__main__':
                 real_grad = net.imgrad(outputs)
 
                 depth_loss = depth_criterion(predicts, outputs)#+depth_criterion(predict_grad, real_grad)
-                writer.add_scalar('Loss/val_RMSE_log', depth_loss.item(),  _i+(epoch* dataset_val.__len__()))
+                writer.add_scalar('Loss/val_RMSE_log', depth_loss.item(), iter_val)
 
                 loss_val+=depth_loss.item()*inputs.size(0)
                 if cont%250 == 0:
@@ -318,16 +316,13 @@ if __name__ == '__main__':
 
 
             loss_val = loss_val/dataset_val.__len__()
-            history_val.append(loss_val)
             print("\n FINISHED VAL epoch %2d with loss: %.4f " % (epoch, loss_val ))
 
         if loss_val< best_loss and epoch>6:
             best_loss = depth_loss
             best_model_wts = copy.deepcopy(net.state_dict())
             #torch.save({'model': net.state_dict(), 'optim':optimizer_ft.state_dict() }, 'Dropped/model_unet_V2')
-            #np.save('Dropped_manifold/loss_unet',loss_list)
-            #np.save('Dropped_manifold/loss_val_unet',history_val)
-            #np.save('Dropped_manifold/grads_train_loss', grads_train_loss)
+
 
 
 
