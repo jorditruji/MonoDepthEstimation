@@ -129,194 +129,205 @@ class GradLoss(nn.Module):
         return torch.sum( torch.mean( torch.abs(grad_real-grad_fake) ) )
 
 
-# Instantiate a model and dataset
-net = RGBDepth_Depth()
-
-# Transforms train
-train_trans = Compose([RandomCrop(360,480),
-        Resize(240, 320),
-        DepthScale(),
-        HueSaturationValue(hue_shift_limit=15, sat_shift_limit=20, 
-            val_shift_limit=15, p=0.5),
-        HorizontalFlip(p=0.5),
-        Normalize(
-         mean=[0.48958883,0.41837043, 0.39797969],
-            std=[0.26429949, 0.2728771,  0.28336788]),
-        ToTensor()]
-    )
-
-
-test_trans = Compose([Resize(240, 320),
-        Normalize(
-         mean=[0.48958883,0.41837043, 0.39797969],
-            std=[0.26429949, 0.2728771,  0.28336788]),
-        DepthScale(),
-        ToTensor()]
-    )
-
-depths = np.load('Data_management/NYU_partitions0.npy', allow_pickle=True).item()
-#depths = ['Test_samples/frame-000000.depth.pgm','Test_samples/frame-000025.depth.pgm','Test_samples/frame-000050.depth.pgm','Test_samples/frame-000075.depth.pgm']
-
-train_depths = [depth for depth in depths['train'] if 'NYUstudy_0002_out/study_00026depth' not in depth]
-dataset = NYUDataset(train_depths,  transforms=train_trans)
-dataset_val = NYUDataset(depths['val'],  transforms=test_trans)
 
 
 
+if __name__ == '__main__':
+    # Parse arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--experiment_name", default=None, type=str, required=True,
+                        help="Options: NYUDataset, ScanNet.")
 
-# dataset = Dataset(np.load('Data_management/dataset.npy').item()['train'][1:20])
-# Parameters
-params = {'batch_size': 18 ,
-          'shuffle': True,
-          'num_workers': 8,
-          'pin_memory': True}
-params_test = {'batch_size': 18 ,
-          'shuffle': False,
-          'num_workers': 8,
-          'pin_memory': True}
+    args = parser.parse_args()
+
+    # Instantiate a model and dataset
+    net = RGBDepth_Depth()
+
+    # Transforms train
+    train_trans = Compose([RandomCrop(360,480),
+            Resize(240, 320),
+            DepthScale(),
+            HueSaturationValue(hue_shift_limit=15, sat_shift_limit=20, 
+                val_shift_limit=15, p=0.5),
+            HorizontalFlip(p=0.5),
+            Normalize(
+             mean=[0.48958883,0.41837043, 0.39797969],
+                std=[0.26429949, 0.2728771,  0.28336788]),
+            ToTensor()]
+        )
 
 
-training_generator = data.DataLoader(dataset,**params)
-val_generator = data.DataLoader(dataset_val,**params_test)
+    test_trans = Compose([Resize(240, 320),
+            Normalize(
+             mean=[0.48958883,0.41837043, 0.39797969],
+                std=[0.26429949, 0.2728771,  0.28336788]),
+            DepthScale(),
+            ToTensor()]
+        )
 
-net.train()
-print(net)
+    depths = np.load('Data_management/NYU_partitions0.npy', allow_pickle=True).item()
+    #depths = ['Test_samples/frame-000000.depth.pgm','Test_samples/frame-000025.depth.pgm','Test_samples/frame-000050.depth.pgm','Test_samples/frame-000075.depth.pgm']
+
+    train_depths = [depth for depth in depths['train'] if 'NYUstudy_0002_out/study_00026depth' not in depth]
+    dataset = NYUDataset(train_depths,  transforms=train_trans)
+    dataset_val = NYUDataset(depths['val'],  transforms=test_trans)
 
 
-writer = SummaryWriter(log_dir='Logs_Drop/', comment='', purge_step=None, max_queue=100, flush_secs=120, filename_suffix='')
 
-# Loss
-depth_criterion = RMSE_log()
-grad_loss = GradLoss()
-normal_loss = NormalLoss()
-mani_loss = RMSE()
-# Use gpu if possible and load model there
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-print(device)
-net = net.to(device)
 
-# Optimizer
-optimizer_ft = optim.Adam(net.parameters(), lr=1e-4, betas=(0.9, 0.999), eps=1e-08, weight_decay=4e-5)
-#scheduler = optim.lr_scheduler.StepLR(optimizer_ft, step_size=100, gamma=0.1)
-loss_list = []
-grads_train_loss = []
-grads_val_loss = []
-history_val = []
-best_loss = 50
-for epoch in range(20):
-    # Train
+    # dataset = Dataset(np.load('Data_management/dataset.npy').item()['train'][1:20])
+    # Parameters
+    params = {'batch_size': 18 ,
+              'shuffle': True,
+              'num_workers': 8,
+              'pin_memory': True}
+    params_test = {'batch_size': 18 ,
+              'shuffle': False,
+              'num_workers': 8,
+              'pin_memory': True}
+
+
+    training_generator = data.DataLoader(dataset,**params)
+    val_generator = data.DataLoader(dataset_val,**params_test)
+
     net.train()
-    cont = 0
-    loss_train = 0.0
-    grads_loss = 0.0
+    print(net)
 
-    for _i, (depths, rgbs, filename) in enumerate(training_generator):
-        #cont+=1
-        # Get items from generator
-        inputs, outputs = rgbs.cuda(), depths.cuda()
 
-        #print(torch.max(outputs.view(input.size(0), -1)))
+    writer = SummaryWriter(args.experiment_name)
 
-        # Clean grads
-        optimizer_ft.zero_grad()
+    # Loss
+    depth_criterion = RMSE_log()
+    grad_loss = GradLoss()
+    normal_loss = NormalLoss()
+    mani_loss = RMSE()
+    # Use gpu if possible and load model there
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print(device)
+    net = net.to(device)
 
-        #Forward
-        predicts, grads = net(inputs,outputs)
-        #print("inputs: depth {} rgb {}".format(inputs.size(), outputs.size()))
-        #print("outputs: depth {} grad {}".format(predicts.size(), grads.size()))
-           
-        #Backward+update weights
-        depth_loss = depth_criterion(predicts, outputs) #+ depth_criterion(predicts[1], outputs)
-        writer.add_scalar('Loss/train_RMSE_log', depth_loss.item(), _i+(epoch* dataset.__len__()))
+    # Optimizer
+    optimizer_ft = optim.Adam(net.parameters(), lr=1e-4, betas=(0.9, 0.999), eps=1e-08, weight_decay=4e-5)
+    #scheduler = optim.lr_scheduler.StepLR(optimizer_ft, step_size=100, gamma=0.1)
+    loss_list = []
+    grads_train_loss = []
+    grads_val_loss = []
+    history_val = []
+    best_loss = 50
+    for epoch in range(20):
+        # Train
+        net.train()
+        cont = 0
+        loss_train = 0.0
+        grads_loss = 0.0
 
-        # Grad loss
-        gradie_loss = 0.
-        if epoch > 4:
-            real_grad = net.imgrad(outputs)
-            gradie_loss = grad_loss(grads, real_grad)#+ grad_loss(grads[1], real_grad)
-            grads_loss+=gradie_loss.item()*inputs.size(0)
-            writer.add_scalar('Loss/train_MAE_grad_log', gradie_loss.item(),  _i+(epoch* dataset.__len__()))
-
-        #normal_loss = normal_loss(predict_grad, real_grad) * (epoch>7)
-        #cont+=1
-        # Manifold loss
-        embed_lose = 0#mani_loss(manifolds[0],manifolds[1])
-
-        loss = depth_loss + 12*gradie_loss #+0.045*embed_lose# + normal_loss
-        writer.add_scalar('Loss/train_real_loss', loss.item(),  _i+(epoch* dataset.__len__()))
-
-        loss.backward()
-        optimizer_ft.step()
-        loss_train+=loss.item()*inputs.size(0)
-        if cont%250 == 0:
-            #loss.append(depth_loss.item())
-            print("TRAIN: [epoch %2d][iter %4d] loss: %.4f" \
-            % (epoch, cont, depth_loss.item()))
-            print("Mani: {}, depth:{}, gradient{}".format(0.075*embed_lose, depth_loss, gradie_loss))
-        cont+=1    
-    if epoch%1==0:
-        predict_depth = predicts[0].detach().cpu()
-        #np.save('pspnet'+str(epoch), saver)
-        save_predictions(predict_depth[0].detach(), rgbs[0], outputs[0],name ='Dropped/unet2_train1_epoch_'+str(epoch))
-        #predict_depth = predicts[1].detach().cpu()
-        #np.save('pspnet'+str(epoch), saver)
-        save_predictions(predicts[1][0].detach().cpu(), rgbs[1], outputs[1],name ='Dropped/unet2_train2_epoch_'+str(epoch))
-   
-
-    loss_train = loss_train/dataset.__len__()
-    grads_loss = grads_loss/dataset.__len__()
- 
-    print("\n FINISHED TRAIN epoch %2d with loss: %.4f " % (epoch, loss_train ))
-    # Val
-    loss_list.append(loss_train)
-    grads_train_loss.append(grads_loss)
-    net.eval()
-    loss_val = 0.0
-    cont = 0
-
-    # We dont need to track gradients here, so let's save some memory and time
-    with torch.no_grad():
-        for _i, (depths, rgbs, filename) in enumerate(val_generator):
-            cont+=1
+        for _i, (depths, rgbs, filename) in enumerate(training_generator):
+            #cont+=1
             # Get items from generator
-            inputs = rgbs.cuda()
-            # Non blocking so computation can start while labels are being loaded
-            outputs = depths.cuda(async=True)
-            
+            inputs, outputs = rgbs.cuda(), depths.cuda()
+
+            #print(torch.max(outputs.view(input.size(0), -1)))
+
+            # Clean grads
+            optimizer_ft.zero_grad()
+
             #Forward
-            predicts, grads= net(inputs,outputs)
+            predicts, grads = net(inputs,outputs)
+            #print("inputs: depth {} rgb {}".format(inputs.size(), outputs.size()))
+            #print("outputs: depth {} grad {}".format(predicts.size(), grads.size()))
+               
+            #Backward+update weights
+            depth_loss = depth_criterion(predicts, outputs) #+ depth_criterion(predicts[1], outputs)
+            writer.add_scalar('Loss/train_RMSE_log', depth_loss.item(), _i+(epoch* dataset.__len__()))
 
-            #Sobel grad estimates:
-            real_grad = net.imgrad(outputs)
+            # Grad loss
+            gradie_loss = 0.
+            if epoch > 4:
+                real_grad = net.imgrad(outputs)
+                gradie_loss = grad_loss(grads, real_grad)#+ grad_loss(grads[1], real_grad)
+                grads_loss+=gradie_loss.item()*inputs.size(0)
+                writer.add_scalar('Loss/train_MAE_grad_log', gradie_loss.item(),  _i+(epoch* dataset.__len__()))
 
-            depth_loss = depth_criterion(predicts, outputs)#+depth_criterion(predict_grad, real_grad)
-            writer.add_scalar('Loss/val_RMSE_log', depth_loss.item(),  _i+(epoch* dataset_val.__len__()))
+            #normal_loss = normal_loss(predict_grad, real_grad) * (epoch>7)
+            #cont+=1
+            # Manifold loss
+            embed_lose = 0#mani_loss(manifolds[0],manifolds[1])
 
-            loss_val+=depth_loss.item()*inputs.size(0)
+            loss = depth_loss + 12*gradie_loss #+0.045*embed_lose# + normal_loss
+            writer.add_scalar('Loss/train_real_loss', loss.item(),  _i+(epoch* dataset.__len__()))
+
+            loss.backward()
+            optimizer_ft.step()
+            loss_train+=loss.item()*inputs.size(0)
             if cont%250 == 0:
-                print("VAL: [epoch %2d][iter %4d] loss: %.4f" \
-                % (epoch, cont, depth_loss))   
-            #scheduler.step()
+                #loss.append(depth_loss.item())
+                print("TRAIN: [epoch %2d][iter %4d] loss: %.4f" \
+                % (epoch, cont, depth_loss.item()))
+                print("Mani: {}, depth:{}, gradient{}".format(0.075*embed_lose, depth_loss, gradie_loss))
+            cont+=1    
         if epoch%1==0:
             predict_depth = predicts[0].detach().cpu()
             #np.save('pspnet'+str(epoch), saver)
-            save_predictions(predict_depth[0].detach(), rgbs[0], outputs[0],name ='Dropped/unet1_epoch_'+str(epoch))
+            save_predictions(predict_depth[0].detach(), rgbs[0], outputs[0],name ='Dropped/unet2_train1_epoch_'+str(epoch))
             #predict_depth = predicts[1].detach().cpu()
             #np.save('pspnet'+str(epoch), saver)
-            save_predictions(predicts[1][0].detach().cpu(), rgbs[1], outputs[1],name ='Dropped/unet2_epoch_'+str(epoch))
+            save_predictions(predicts[1][0].detach().cpu(), rgbs[1], outputs[1],name ='Dropped/unet2_train2_epoch_'+str(epoch))
+       
+
+        loss_train = loss_train/dataset.__len__()
+        grads_loss = grads_loss/dataset.__len__()
+     
+        print("\n FINISHED TRAIN epoch %2d with loss: %.4f " % (epoch, loss_train ))
+        # Val
+        loss_list.append(loss_train)
+        grads_train_loss.append(grads_loss)
+        net.eval()
+        loss_val = 0.0
+        cont = 0
+
+        # We dont need to track gradients here, so let's save some memory and time
+        with torch.no_grad():
+            for _i, (depths, rgbs, filename) in enumerate(val_generator):
+                cont+=1
+                # Get items from generator
+                inputs = rgbs.cuda()
+                # Non blocking so computation can start while labels are being loaded
+                outputs = depths.cuda(async=True)
+                
+                #Forward
+                predicts, grads= net(inputs,outputs)
+
+                #Sobel grad estimates:
+                real_grad = net.imgrad(outputs)
+
+                depth_loss = depth_criterion(predicts, outputs)#+depth_criterion(predict_grad, real_grad)
+                writer.add_scalar('Loss/val_RMSE_log', depth_loss.item(),  _i+(epoch* dataset_val.__len__()))
+
+                loss_val+=depth_loss.item()*inputs.size(0)
+                if cont%250 == 0:
+                    print("VAL: [epoch %2d][iter %4d] loss: %.4f" \
+                    % (epoch, cont, depth_loss))   
+                #scheduler.step()
+            if epoch%1==0:
+                predict_depth = predicts[0].detach().cpu()
+                #np.save('pspnet'+str(epoch), saver)
+                save_predictions(predict_depth[0].detach(), rgbs[0], outputs[0],name ='Dropped/unet1_epoch_'+str(epoch))
+                #predict_depth = predicts[1].detach().cpu()
+                #np.save('pspnet'+str(epoch), saver)
+                save_predictions(predicts[1][0].detach().cpu(), rgbs[1], outputs[1],name ='Dropped/unet2_epoch_'+str(epoch))
 
 
-        loss_val = loss_val/dataset_val.__len__()
-        history_val.append(loss_val)
-        print("\n FINISHED VAL epoch %2d with loss: %.4f " % (epoch, loss_val ))
+            loss_val = loss_val/dataset_val.__len__()
+            history_val.append(loss_val)
+            print("\n FINISHED VAL epoch %2d with loss: %.4f " % (epoch, loss_val ))
 
-    if loss_val< best_loss and epoch>6:
-        best_loss = depth_loss
-        best_model_wts = copy.deepcopy(net.state_dict())
-        torch.save({'model': net.state_dict(), 'optim':optimizer_ft.state_dict() }, 'Dropped/model_unet_V2')
-        #np.save('Dropped_manifold/loss_unet',loss_list)
-        #np.save('Dropped_manifold/loss_val_unet',history_val)
-        #np.save('Dropped_manifold/grads_train_loss', grads_train_loss)
+        if loss_val< best_loss and epoch>6:
+            best_loss = depth_loss
+            best_model_wts = copy.deepcopy(net.state_dict())
+            torch.save({'model': net.state_dict(), 'optim':optimizer_ft.state_dict() }, 'Dropped/model_unet_V2')
+            #np.save('Dropped_manifold/loss_unet',loss_list)
+            #np.save('Dropped_manifold/loss_val_unet',history_val)
+            #np.save('Dropped_manifold/grads_train_loss', grads_train_loss)
 
 
 
