@@ -107,9 +107,11 @@ class RGBDepth_Depth(nn.Module):
         
         # Encoder - decoder connections
         #layer4 = self.layer4_1x1(layer4)
-        layer3 = self.layer3_1x1(layer3)
-        layer2 = self.layer2_1x1(layer2)
-        layer1 = self.layer1_1x1(layer1)
+        layer3 = self.drop_1(self.layer3_1x1(layer3))
+        layer2 = self.drop_1(self.layer2_1x1(layer2))
+        layer1 = self.drop_1(self.layer1_1x1(layer1))
+        layer0 = self.drop_1(layer0)
+        x_original = self.drop_1(x_original)
         '''
         # Decoder RGB
         layer4 = self.layer4_1x1(layer4)
@@ -142,8 +144,7 @@ class RGBDepth_Depth(nn.Module):
         # Decoder depth
         
         depth_layer4 = self.layer4_1x1(depth_layer4)
-        if self.dropout:
-            depth_layer4 = self.drop_1(depth_layer4)
+
         
         depth = self.upsample_v2(depth_layer4)
 
