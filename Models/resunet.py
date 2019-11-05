@@ -77,7 +77,7 @@ class RGBDepth_Depth(nn.Module):
         self.x_sobel = self.x_sobel.cuda() if torch.cuda.is_available() else self.x_sobel
         self.y_sobel = self.y_sobel.cuda() if torch.cuda.is_available() else self.y_sobel
         self.base_layers = None # Avoid unnecessary memory
-        self.drop_1 = nn.Dropout2d(p=0.99)
+        self.drop_1 = nn.Dropout2d(p=0.95)
         self.drop_2 = nn.Dropout2d(p=0.15)
 
     def forward(self, input, ground_truth):
@@ -184,7 +184,7 @@ class RGBDepth_Depth(nn.Module):
 
         # Add dims to fit batch_size, n_filters, filter shape
         a = a.view((1,1,3,3))
-        a = Variable(a)
+        a = Variable(a, requires_grad = False)
 
         # Repeat for vertical contours
         b = torch.Tensor([[1, 2, 1],
@@ -192,7 +192,7 @@ class RGBDepth_Depth(nn.Module):
                         [-1, -2, -1]])
 
         b = b.view((1,1,3,3))
-        b = Variable(b)
+        b = Variable(b, requires_grad = False)
 
         return a,b
 

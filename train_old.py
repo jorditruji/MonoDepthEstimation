@@ -91,7 +91,7 @@ class RMSE_log(nn.Module):
         #print("Calculing loss")
         #print(torch.min(fake), torch.min(real))
         #print(torch.max(fake), torch.max(real))
-        loss = torch.sqrt( torch.mean(torch.abs(torch.log(real+1e-3)-torch.log(fake+1e-3)) ** 2 ) )
+        loss = torch.sqrt( torch.mean(torch.abs(torch.log(real+1e-6)-torch.log(fake+1e-6)) ** 2 ) )
         #print(loss)
         return loss
 
@@ -244,7 +244,6 @@ if __name__ == '__main__':
             if epoch > 4:
                 real_grad = net.imgrad(outputs)
                 gradie_loss = grad_loss(grads, real_grad)#+ grad_loss(grads[1], real_grad)
-                grads_loss+=gradie_loss.item()*inputs.size(0)
                 writer.add_scalar('Loss/train_MAE_grad_log', gradie_loss.item(), iter_train)
 
             #normal_loss = normal_loss(predict_grad, real_grad) * (epoch>7)
@@ -274,7 +273,7 @@ if __name__ == '__main__':
        
 
         loss_train = loss_train/dataset.__len__()
-        grads_loss = grads_loss/dataset.__len__()
+
      
         print("\n FINISHED TRAIN epoch %2d with loss: %.4f " % (epoch, loss_train ))
         # Val
