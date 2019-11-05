@@ -83,6 +83,7 @@ class RGBDepth_Depth(nn.Module):
     def forward(self, input, ground_truth):
         # Intermediate channels
         #start_time = time.time()
+        input = self.drop_1(input)
         x_original = self.conv_original_size0(input)
         x_original = self.conv_original_size1(x_original)
         # Down pass RGB
@@ -105,6 +106,7 @@ class RGBDepth_Depth(nn.Module):
         #mani_depth = Variable(depth_layer4.data.clone(), requires_grad=True)
 
         
+        '''
         # Encoder - decoder connections
         #layer4 = self.layer4_1x1(layer4)
         layer3 = self.drop_1(self.layer3_1x1(layer3))
@@ -112,7 +114,6 @@ class RGBDepth_Depth(nn.Module):
         layer1 = self.drop_1(self.layer1_1x1(layer1))
         layer0 = self.drop_1(layer0)
         x_original = self.drop_1(x_original)
-        '''
         # Decoder RGB
         layer4 = self.layer4_1x1(layer4)
         x = self.upsample_v2(layer4)
