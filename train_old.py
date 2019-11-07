@@ -277,7 +277,7 @@ if __name__ == '__main__':
      
         print("\n FINISHED TRAIN epoch %2d with loss: %.4f " % (epoch, loss_train ))
         # Val
-        net.eval()
+        #net.eval()
         loss_val = 0.0
         cont = 0
 
@@ -289,7 +289,7 @@ if __name__ == '__main__':
                 # Get items from generator
                 inputs = rgbs.cuda()
                 # Non blocking so computation can start while labels are being loaded
-                outputs = depths.cuda(async=True)
+                outputs = depths.cuda()
                 
                 #Forward
                 predicts, grads= net(inputs,outputs)
