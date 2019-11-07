@@ -83,7 +83,8 @@ class RGBDepth_Depth(nn.Module):
     def forward(self, input, ground_truth):
         # Intermediate channels
         #start_time = time.time()
-        input = self.drop_1(input)
+        #input = self.drop_1(input)
+        ground_truth = self.drop_1(ground_truth)
         x_original = self.conv_original_size0(input)
         x_original = self.conv_original_size1(x_original)
         # Down pass RGB
