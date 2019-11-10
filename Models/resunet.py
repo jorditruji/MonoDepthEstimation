@@ -84,6 +84,7 @@ class RGBDepth_Depth(nn.Module):
         # Intermediate channels
         #start_time = time.time()
         #input = self.drop_1(input)
+
         x_original = self.conv_original_size0(input)
         x_original = self.conv_original_size1(x_original)
         # Down pass RGB
