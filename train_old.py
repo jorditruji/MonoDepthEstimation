@@ -199,10 +199,10 @@ if __name__ == '__main__':
 
 
 
-    depths = np.load('Data_management/NYU_partitions0.npy', allow_pickle=True).item()
+    depths_list = np.load('Data_management/NYU_partitions0.npy', allow_pickle=True).item()
     #depths = ['Test_samples/frame-000000.depth.pgm','Test_samples/frame-000025.depth.pgm','Test_samples/frame-000050.depth.pgm','Test_samples/frame-000075.depth.pgm']
 
-    train_depths = [depth for depth in depths['train'] if 'NYUstudy_0002_out/study_00026depth' not in depth]
+    train_depths = [depth for depth in depths_list['train'] if 'NYUstudy_0002_out/study_00026depth' not in depth]
 
 
 
@@ -258,7 +258,7 @@ if __name__ == '__main__':
 
         # Create datasets
         dataset = NYUDataset(train_depths,  transforms=train_trans)
-        dataset_val = NYUDataset(depths['val'],  transforms=test_trans)
+        dataset_val = NYUDataset(depths_list['val'],  transforms=test_trans)
         training_generator = data.DataLoader(dataset,**params)
         val_generator = data.DataLoader(dataset_val,**params_test)
 
