@@ -43,6 +43,10 @@ class RGBDepth_Depth(nn.Module):
         self.layer4 = self.base_layers[7]  # size=(N, 512, x.H/32, x.W/32)
         self.layer4_1x1 = convrelu(512, 512, 1, 0) 
 
+        del self.base_model
+        self.base_model = models.resnet18(pretrained=True)
+        
+        self.base_layers = list(self.base_model.children())
         # Encoder Depth
         self.depth_input_cnn = convrelu(1, 3, 1, 0) # size=(N, 3, x.H, x.W)
         self.depth_layer0 = nn.Sequential(*self.base_layers[:3]) # size=(N, 64, x.H/2, x.W/2)
