@@ -77,7 +77,7 @@ class RGBDepth_Depth(nn.Module):
         self.x_sobel = self.x_sobel.cuda() if torch.cuda.is_available() else self.x_sobel
         self.y_sobel = self.y_sobel.cuda() if torch.cuda.is_available() else self.y_sobel
         self.base_layers = None # Avoid unnecessary memory
-        self.drop_1 = nn.Dropout2d(p=0.25)
+        self.drop_1 = nn.Dropout2d(p=0.5)
         self.drop_2 = nn.Dropout2d(p=0.15)
 
     def forward(self, input, ground_truth):
@@ -153,7 +153,8 @@ class RGBDepth_Depth(nn.Module):
 
         depth = torch.cat([depth, layer3], dim=1)
         depth = self.conv_up3(depth)
- 
+         depth = self.drop_1(depth)
+
         depth = self.upsample(depth)
         depth = torch.cat([depth, layer2], dim=1)
         depth = self.conv_up2(depth)
@@ -161,10 +162,12 @@ class RGBDepth_Depth(nn.Module):
         depth = self.upsample(depth)
         depth = torch.cat([depth, layer1], dim=1)
         depth = self.conv_up1(depth)
+        depth = self.drop_1(depth)
 
         depth = self.upsample(depth)
         depth = torch.cat([depth, layer0], dim=1)
         depth = self.conv_up0(depth)
+        depth = self.drop_1(depth)
         
         depth = self.upsample(depth)
         depth = torch.cat([depth, x_original], dim=1)
