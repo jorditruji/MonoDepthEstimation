@@ -218,8 +218,7 @@ if __name__ == '__main__':
               'pin_memory': True}
 
 
-    training_generator = data.DataLoader(dataset,**params)
-    val_generator = data.DataLoader(dataset_val,**params_test)
+
 
     net.train()
     print(net)
