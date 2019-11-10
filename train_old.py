@@ -28,7 +28,7 @@ from torch.utils.tensorboard import SummaryWriter
 import argparse
 
 class DepthScale(BasicTransform):
-    """Transform applied to image only."""
+    """Transform applied to mask only."""
     def __init__(self, always_apply = True, p = 1.):
         super(DepthScale, self).__init__(always_apply, p)
 
@@ -39,6 +39,39 @@ class DepthScale(BasicTransform):
     def apply_to_mask(self, img, **params):
         #print(img.shape)
         return (img-np.min(img))/(np.max(img)-np.min(img))
+
+
+
+class RGB_dropper(BasicTransform):
+    """Transform applied to image only."""
+    def __init__(self, always_apply = True, p = 1., size = (240,320,3), drop_p = 1.):
+        super(RGB_dropper, self).__init__(always_apply, p)
+        self.matrix = np.random.choice([0.,1.], size = size, p = [drop_p, 1-drop_p])
+
+    @property
+    def targets(self):
+        return {"image": self.apply}
+
+    def apply(self, img, **params):
+        #print(img.shape)
+        return img[:,:,:]*self.matrix[:,:,:]
+
+
+class Depth_dropper(BasicTransform):
+    """Transform applied to image only."""
+    def __init__(self, always_apply = True, p = 1., size = (240,320), drop_p = 1.):
+        super(Depth_dropper, self).__init__(always_apply, p)
+        self.matrix = np.random.choice([0.,1.], size = size, p = [drop_p, 1-drop_p])
+
+    @property
+    def targets(self):
+        return {"mask": self.apply_to_mask}
+
+    def apply_to_mask(self, img, **params):
+        #print(img.shape)
+        return img[:,:]*self.matrix[:,:]
+
+
 
 
 # Save predictions
@@ -129,8 +162,29 @@ class GradLoss(nn.Module):
         return torch.sum( torch.mean( torch.abs(grad_real-grad_fake) ) )
 
 
+def make_train_transforms(drop_p = 1.):
+    return Compose([RandomCrop(360,480),
+        Resize(240, 320),
+        DepthScale(),
+        HueSaturationValue(hue_shift_limit=15, sat_shift_limit=20, 
+            val_shift_limit=15, p=0.5),
+        HorizontalFlip(p=0.5),
+        Normalize(
+         mean=[0.48958883,0.41837043, 0.39797969],
+            std=[0.26429949, 0.2728771,  0.28336788]),
+        RGB_dropper(drop_p = drop_p)
+        ToTensor()]
+    )
 
-
+def make_test_transforms(drop_p = 1.):
+    return test_trans = Compose([Resize(240, 320),
+        Normalize(
+         mean=[0.48958883,0.41837043, 0.39797969],
+            std=[0.26429949, 0.2728771,  0.28336788]),
+        DepthScale(),
+        RGB_dropper(drop_p = drop_p),
+        ToTensor()]
+    )
 
 if __name__ == '__main__':
     # Parse arguments
@@ -143,35 +197,12 @@ if __name__ == '__main__':
     # Instantiate a model and dataset
     net = RGBDepth_Depth()
 
-    # Transforms train
-    train_trans = Compose([RandomCrop(360,480),
-            Resize(240, 320),
-            DepthScale(),
-            HueSaturationValue(hue_shift_limit=15, sat_shift_limit=20, 
-                val_shift_limit=15, p=0.5),
-            HorizontalFlip(p=0.5),
-            Normalize(
-             mean=[0.48958883,0.41837043, 0.39797969],
-                std=[0.26429949, 0.2728771,  0.28336788]),
-            ToTensor()]
-        )
 
-
-    test_trans = Compose([Resize(240, 320),
-            Normalize(
-             mean=[0.48958883,0.41837043, 0.39797969],
-                std=[0.26429949, 0.2728771,  0.28336788]),
-            DepthScale(),
-            ToTensor()]
-        )
 
     depths = np.load('Data_management/NYU_partitions0.npy', allow_pickle=True).item()
     #depths = ['Test_samples/frame-000000.depth.pgm','Test_samples/frame-000025.depth.pgm','Test_samples/frame-000050.depth.pgm','Test_samples/frame-000075.depth.pgm']
 
     train_depths = [depth for depth in depths['train'] if 'NYUstudy_0002_out/study_00026depth' not in depth]
-    dataset = NYUDataset(train_depths,  transforms=train_trans)
-    dataset_val = NYUDataset(depths['val'],  transforms=test_trans)
-
 
 
 
@@ -212,18 +243,32 @@ if __name__ == '__main__':
     best_loss = 50
     iter_train = 0
     iter_val = 0
-    for epoch in range(20):
+    n_epoch = 20
+    for epoch in range(n_epoch):
         # Train
         net.train()
         cont = 0
         loss_train = 0.0
         grads_loss = 0.0
+        RGB_drops = np.array([0]*5 + list(range(5)) + [5]*(n_epoch-10))/5
+        # flip
+        RGB_drops = RGB_drops[::-1]
+        # Transforms train
+        train_trans = make_train_transforms(drop_p = RGB_drops[epoch])
+        test_trans =  make_test_transforms(drop_p = RGB_drops[epoch])
+
+        # Create datasets
+        dataset = NYUDataset(train_depths,  transforms=train_trans)
+        dataset_val = NYUDataset(depths['val'],  transforms=test_trans)
+        training_generator = data.DataLoader(dataset,**params)
+        val_generator = data.DataLoader(dataset_val,**params_test)
 
         for _i, (depths, rgbs, filename) in enumerate(training_generator):
             #cont+=1
             iter_train+=1
             # Get items from generator
             inputs, outputs = rgbs.cuda(), depths.cuda()
+            writer.add_scalar('Others/train_RGB_information', 1-RGB_drops[epoch],iter_train)
 
             #print(torch.max(outputs.view(input.size(0), -1)))
 
@@ -293,7 +338,7 @@ if __name__ == '__main__':
                 
                 #Forward
                 predicts, grads= net(inputs,outputs)
-
+                writer.add_scalar('Others/val_RGB_information', 1-RGB_drops[epoch],iter_train)
                 #Sobel grad estimates:
                 real_grad = net.imgrad(outputs)
 
