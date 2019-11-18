@@ -172,7 +172,7 @@ def make_train_transforms(drop_p = 1.):
         Normalize(
          mean=[0.48958883,0.41837043, 0.39797969],
             std=[0.26429949, 0.2728771,  0.28336788]),
-        #RGB_dropper(drop_p = drop_p),
+        RGB_dropper(drop_p = drop_p),
         ToTensor()]
     )
 
@@ -182,7 +182,7 @@ def make_test_transforms(drop_p = 1.):
          mean=[0.48958883,0.41837043, 0.39797969],
             std=[0.26429949, 0.2728771,  0.28336788]),
         DepthScale(),
-        #RGB_dropper(drop_p = drop_p),
+        RGB_dropper(drop_p = drop_p),
         ToTensor()]
     )
 
@@ -249,7 +249,7 @@ if __name__ == '__main__':
         cont = 0
         loss_train = 0.0
         grads_loss = 0.0
-        RGB_drops = np.array([0]*5 + list(range(5)) + [5]*(n_epoch-10))/5
+        RGB_drops = np.array([1]*n_epoch)# + list(range(5)) + [5]*(n_epoch-10))/5
         # flip
         RGB_drops = RGB_drops[::-1]
         # Transforms train

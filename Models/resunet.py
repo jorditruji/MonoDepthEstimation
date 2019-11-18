@@ -44,6 +44,7 @@ class RGBDepth_Depth(nn.Module):
         self.layer4_1x1 = convrelu(512, 512, 1, 0) 
 
         del self.base_model
+        del self.base_layers
         self.base_model = models.resnet18(pretrained=True)
         
         self.base_layers = list(self.base_model.children())
