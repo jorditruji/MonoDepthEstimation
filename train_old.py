@@ -255,6 +255,7 @@ if __name__ == '__main__':
         # Transforms train
         train_trans = make_train_transforms(drop_p = RGB_drops[epoch])
         test_trans =  make_test_transforms(drop_p = RGB_drops[epoch])
+        print("{} ratio of RGB zeroed pixels".format(RGB_drops[epoch]))
 
         # Create datasets
         dataset = NYUDataset(train_depths,  transforms=train_trans)
