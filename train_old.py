@@ -251,7 +251,8 @@ if __name__ == '__main__':
         cont = 0
         loss_train = 0.0
         grads_loss = 0.0
-        RGB_drops = np.array([1]*n_epoch)# + list(range(5)) + [5]*(n_epoch-10))/5
+        #RGB_drops = np.array([1]*n_epoch)# + list(range(5)) + [5]*(n_epoch-10))/5
+        RGB_drops = np.array([0]*n_epoch + list(range(5)) + [5]*(n_epoch-10))/5
         # flip
         RGB_drops = RGB_drops[::-1]
         # Transforms train
