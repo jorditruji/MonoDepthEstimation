@@ -149,9 +149,15 @@ class RGBDepth_Depth(nn.Module):
         out = self.conv_last(x)        
         '''
         # Decoder depth
-        
+        '''
         depth_layer4 = self.layer4_1x1(depth_layer4)
         depth_layer4 = self.drop_1(depth_layer4)
+        '''
+
+        depth_layer4 = self.layer4_1x1(layer4)
+        depth_layer4 = self.drop_1(depth_layer4)
+
+
 
         depth = self.upsample_v2(depth_layer4)
 
