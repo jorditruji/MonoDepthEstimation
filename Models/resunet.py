@@ -83,13 +83,15 @@ class RGBDepth_Depth(nn.Module):
         self.y_sobel = self.y_sobel.cuda() if torch.cuda.is_available() else self.y_sobel
         self.base_layers = None # Avoid unnecessary memory
         self.drop_1 = nn.Dropout2d(p=0.35)
-        self.drop_2 = nn.Dropout2d(p=0.15)
+        self.drop_2 = nn.Dropout2d(p=1.)
 
     def forward(self, input, outputs):
         # Intermediate channels
         #start_time = time.time()
         #input = self.drop_1(input)
+        #output = self.drop_2(outputs)	
         ground_truth = outputs.clone()
+        ground_truth = self.drop_2(ground_truth)
         x_original = self.conv_original_size0(input)
         x_original = self.conv_original_size1(x_original)
         # Down pass RGB

@@ -173,7 +173,7 @@ def make_train_transforms(drop_p = 1.):
          mean=[0.48958883,0.41837043, 0.39797969],
             std=[0.26429949, 0.2728771,  0.28336788]),
         #RGB_dropper(drop_p = drop_p),
-        Depth_dropper(drop_p = drop_p),
+        #Depth_dropper(drop_p = drop_p),
         ToTensor()]
     )
 
@@ -184,7 +184,7 @@ def make_test_transforms(drop_p = 1.):
             std=[0.26429949, 0.2728771,  0.28336788]),
         DepthScale(),
         #RGB_dropper(drop_p = drop_p),
-        Depth_dropper(drop_p = drop_p),
+        #Depth_dropper(drop_p = drop_p),
         ToTensor()]
     )
 
@@ -289,7 +289,7 @@ if __name__ == '__main__':
 
             # Grad loss
             gradie_loss = 0.
-            if epoch > -1:
+            if epoch > 1:
                 real_grad = net.imgrad(outputs)
                 gradie_loss = grad_loss(grads, real_grad)#+ grad_loss(grads[1], real_grad)
                 writer.add_scalar('Loss/train_MAE_grad_log', gradie_loss.item(), iter_train)
