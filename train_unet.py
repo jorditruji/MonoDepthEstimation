@@ -8,6 +8,7 @@ import torch.nn as nn
 import sys
 import copy
 from Models.resunet import RGBDepth_Depth
+from Models.unet import ResNetUNet
 import torch.nn.functional as F
 import matplotlib 
 matplotlib.use('Agg')
@@ -353,7 +354,7 @@ if __name__ == '__main__':
                 outputs = depths.cuda()
                 
                 #Forward
-                predicts, grads= net(inputs,outputs)
+                predicts, grads= net(inputs)
                 writer.add_scalar('Others/val_RGB_information', 1-RGB_drops[epoch],iter_train)
                 #Sobel grad estimates:
                 real_grad = net.imgrad(outputs)
