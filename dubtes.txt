@@ -1,0 +1,26 @@
+- Carregar pesos encoder depth i decoder de l'experiment autoencoder.
+- Carregar pesos imagenet a l'encoder RGB.
+- Afegir opció respresentation_2_use ("Depth", "RGB", "Combined")
+- Exposar funció al model per tal de poder canviar el manifold a mig training.
+- Gestió de la combinació de representacions --> Ho gestiona la xarxa segons epoca? Ho gestiona el train segons les losses dinàmicament?
+
+
+
+--------------------------------------------------------------------------------------------------------
+Iinicialitzar els pesos de l'encoder RGB utilitzant els trobats en l'experiment RGB+Depth to depth
+
+
+1er A Experiment:
+- Encoder depth fixe
+- Encoder RGB i decoder apren
+- MSE entre embedding depth i embedding RGB
+
+1er B Experiment
+- Encoder Depth,  RGB i decoder apren
+- MSE entre embedding depth i embedding RGB
+
+
+Adversarial:
+- Congelem encoder Depth
+- Loss generador: Normal depth i BCE (MAXIMITZO)
+- Adversarial: BCE-- > moini classificador
