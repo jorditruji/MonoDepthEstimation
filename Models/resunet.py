@@ -90,8 +90,8 @@ class RGBDepth_Depth(nn.Module):
         #start_time = time.time()
         #input = self.drop_1(input)
         #output = self.drop_2(outputs)	
-        ground_truth = outputs.clone()
-        ground_truth = self.drop_2(ground_truth)
+        ground_truth = outputs#.clone()
+        #ground_truth = self.drop_2(ground_truth)
         x_original = self.conv_original_size0(input)
         x_original = self.conv_original_size1(x_original)
         # Down pass RGB

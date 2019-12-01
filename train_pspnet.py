@@ -8,6 +8,7 @@ import torch.nn as nn
 import sys
 import copy
 from Models.resunet import RGBDepth_Depth
+from Models.pspnet import PSPNet
 import torch.nn.functional as F
 import matplotlib 
 matplotlib.use('Agg')
@@ -301,7 +302,7 @@ if __name__ == '__main__':
 
             # Grad loss
             gradie_loss = 0.
-            if epoch > -1:
+            if epoch > 1:
                 real_grad = net.imgrad(outputs)
                 gradie_loss = grad_loss(grads, real_grad)#+ grad_loss(grads[1], real_grad)
                 writer.add_scalar('Loss/train_MAE_grad_log', gradie_loss.item(), iter_train)
@@ -352,7 +353,7 @@ if __name__ == '__main__':
                 outputs = depths.cuda()
                 
                 #Forward
-                predicts, grads= net(inputs,outputs)
+                predicts, grads= net(inputs)
                 writer.add_scalar('Others/val_RGB_information', 1-RGB_drops[epoch],iter_train)
                 #Sobel grad estimates:
                 real_grad = net.imgrad(outputs)
