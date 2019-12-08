@@ -8,6 +8,24 @@ from torch.autograd import Variable
 import time
 
 
+def load_model(model, weights_path ='pesosmultioencoder'):
+    """
+    
+    """
+    trained = torch.load(weights_path, map_location='cpu')
+    pesos = trained['model']
+    model_pretrained = load_weights_sequential(model, pesos)
+    return model_pretrained
+
+
+
+# Loads trained weights in target model
+def load_weights_sequential(target, source_state):
+    model_to_load= {k: v for k, v in source_state.items() if k in target.state_dict().keys() }
+    target.load_state_dict(model_to_load)
+    return target
+
+
 def convrelu(in_channels, out_channels, kernel, padding):
     return nn.Sequential(
         nn.Conv2d(in_channels, out_channels, kernel, padding=padding),
@@ -84,7 +102,8 @@ class RGBDepth_Depth(nn.Module):
         self.base_layers = None # Avoid unnecessary memory
         self.drop_1 = nn.Dropout2d(p=0.35)
         self.drop_2 = nn.Dropout2d(p=1.)
-
+        del self.base_model
+        del self.base_layers
     def forward(self, input, outputs):
         # Intermediate channels
         #start_time = time.time()
@@ -138,7 +157,7 @@ class RGBDepth_Depth(nn.Module):
         layer1 = self.layer1_1x1(layer1)
         x = torch.cat([x, layer1], dim=1)
         x = self.conv_up1(x)
-
+        
         x = self.upsample(x)
         layer0 = self.layer0_1x1(layer0)
         x = torch.cat([x, layer0], dim=1)
@@ -184,10 +203,6 @@ class RGBDepth_Depth(nn.Module):
 
         return out_depth, self.imgrad(out_depth)
 
-        # Retornem 2 reconstruccions, els gradients de les reconstruccions i els manifolds
-        #return (out,out_depth), (self.imgrad(out),self.imgrad(out_depth)),(mani_RGB, mani_depth)
-        #return (out,None), (self.imgrad(out),None),(mani_RGB, mani_depth)
-        
     def make_sobel_filters(self):
         ''' Returns sobel filters as part of the network'''
 
