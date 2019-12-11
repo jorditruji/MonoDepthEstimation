@@ -277,7 +277,7 @@ if __name__ == '__main__':
             embed_lose = mani_loss(mani_depth,mani_RGB)
             writer.add_scalar('Loss/train_embedding_MSE', embed_lose.item(), iter_train)
 
-            loss = depth_loss + 10*gradie_loss +(0.5**epoch)*embed_lose# + normal_loss
+            loss = depth_loss + 10*gradie_loss# +(0.5**epoch)*embed_lose# + normal_loss
             writer.add_scalar('Loss/train_real_loss', loss.item(),  iter_train)
 
             loss.backward()
@@ -319,7 +319,7 @@ if __name__ == '__main__':
                 outputs = depths.cuda()
                 
                 #Forward
-                predicts, grads= net(inputs,outputs)
+                predicts, grads,  mani_depth, mani_RGB = net(inputs,outputs)
                 writer.add_scalar('Others/val_RGB_information', 1-RGB_drops[epoch],iter_train)
                 #Sobel grad estimates:
                 real_grad = net.imgrad(outputs)
