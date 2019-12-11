@@ -171,7 +171,7 @@ if __name__ == '__main__':
 
     # Instantiate a model and dataset
     net = RGBDepth_Depth_v2()
-    net = net.load_state_dict(torch.load('pesosmultioencoder', map_location = 'cpu')['model'])
+    net.load_state_dict(torch.load('pesosmultioencoder', map_location = 'cpu')['model'])
 
 
 

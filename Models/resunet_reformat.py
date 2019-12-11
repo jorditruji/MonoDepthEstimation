@@ -172,7 +172,7 @@ class RGBDepth_Depth_v2(nn.Module):
         
         layer4 = self.layer4_1x1(layer4)
         mani_depth = Variable(depth_layer4.data.clone(), requires_grad=True)
-        mani_RGB = Variable(depth_layer4.data.clone(), requires_grad=True)
+        mani_RGB = Variable(layer4.data.clone(), requires_grad=True)
 
         layer4 = self.drop_1(layer4)
 
