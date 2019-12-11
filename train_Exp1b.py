@@ -347,7 +347,7 @@ if __name__ == '__main__':
         if loss_val< best_loss and epoch>2:
             best_loss = loss_val
             best_model_wts = copy.deepcopy(net.state_dict())
-            torch.save({'model': best_model_wts.state_dict(), 'optim':optimizer_ft.state_dict() }, 'pesosmultioencoder')
+            torch.save({'model': best_model_wts, 'optim':optimizer_ft.state_dict() }, 'pesosexp1b')
 
 
 
