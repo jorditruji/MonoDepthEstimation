@@ -124,7 +124,9 @@ class RMSE_log(nn.Module):
         #print("Calculing loss")
         #print(torch.min(fake), torch.min(real))
         #print(torch.max(fake), torch.max(real))
-        loss = torch.sqrt( torch.mean(torch.abs(torch.log(real+1e-6).clamp(min=1e-8)-torch.log(fake+1e-6).clamp(min=1e-8)) ** 2 ) )
+        real = real.clamp(1e-8)
+        fake = fake.clamp(1e-8)
+        loss = torch.sqrt( torch.mean(torch.abs(torch.log(real+1e-6)-torch.log(fake+1e-6)) ** 2 ) )
         #print(loss)
         return loss
 
