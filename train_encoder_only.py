@@ -160,7 +160,9 @@ class GradLoss(nn.Module):
     
     # L1 norm
     def forward(self, grad_fake, grad_real):
-        
+        grad_fake = grad_fake.clamp(1e-8)
+        grad_real = grad_real.clamp(1e-8)
+
         return torch.sum( torch.mean( torch.abs(grad_real-grad_fake) ) )
 
 
