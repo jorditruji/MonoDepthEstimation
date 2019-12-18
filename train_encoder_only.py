@@ -271,7 +271,7 @@ if __name__ == '__main__':
             iter_train+=1
             # Get items from generator
             inputs, outputs = rgbs.cuda(), depths.cuda()
-            writer.add_scalar('Others/train_RGB_information', 1-RGB_drops[epoch],iter_train)
+            #writer.add_scalar('Others/train_RGB_information', 1-RGB_drops[epoch],iter_train)
 
             #print(torch.max(outputs.view(input.size(0), -1)))
 
@@ -289,7 +289,7 @@ if __name__ == '__main__':
 
             # Grad loss
             gradie_loss = 0.
-            if epoch > 1:
+            if epoch >= 1:
                 real_grad = net.imgrad(outputs)
                 gradie_loss = grad_loss(grads, real_grad)#+ grad_loss(grads[1], real_grad)
                 writer.add_scalar('Loss/train_MAE_grad_log', gradie_loss.item(), iter_train)
@@ -369,7 +369,7 @@ if __name__ == '__main__':
         if loss_val< best_loss and epoch>2:
             best_loss = loss_val
             best_model_wts = copy.deepcopy(net.state_dict())
-            torch.save({'model': best_model_wts, 'optim':optimizer_ft.state_dict() }, 'pesosmultioencoder')
+            torch.save({'model': best_model_wts, 'optim':optimizer_ft.state_dict() }, 'pesosonlyencoder')
 
 
 
