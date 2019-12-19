@@ -243,10 +243,14 @@ if __name__ == '__main__':
         dataset_val = NYUDataset(depths_list['val'],  transforms=test_trans)
         training_generator = data.DataLoader(dataset,**params)
         val_generator = data.DataLoader(dataset_val,**params_test)
+        if epoch >3:
+            net.train()
         if epoch == 4:
             for p in net.parameters():
                 p.requires_grad = True
+                net.train()
         for _i, (depths, rgbs, filename) in enumerate(training_generator):
+
             #cont+=1
             iter_train+=1
             # Get items from generator
@@ -274,6 +278,7 @@ if __name__ == '__main__':
                 gradie_loss = grad_loss(grads, real_grad)#+ grad_loss(grads[1], real_grad)
                 writer.add_scalar('Loss/train_MAE_grad_log', gradie_loss.item(), iter_train)
                 loss =  depth_loss + 10*gradie_loss
+
             #normal_loss = normal_loss(predict_grad, real_grad) * (epoch>7)
             #cont+=1
             # Manifold loss
@@ -311,6 +316,7 @@ if __name__ == '__main__':
         encoder.eval()
         loss_val = 0.0
         cont = 0
+        net.eval()
 
         # We dont need to track gradients here, so let's save some memory and time
         with torch.no_grad():

@@ -60,12 +60,11 @@ class RGBEncoder(nn.Module):
         del self.base_model
         del self.base_layers
         
-    def forward(self, input, outputs):
+    def forward(self, input):
         # Intermediate channels
         #start_time = time.time()
         #input = self.drop_1(input)
         #output = self.drop_2(outputs)  
-        ground_truth = outputs.clone()
         #ground_truth = self.drop_2(ground_truth)
         x_original = self.conv_original_size0(input)
         x_original = self.conv_original_size1(x_original)
