@@ -357,8 +357,8 @@ class RGBDepth_Depth_mani(nn.Module):
         self.base_layers = None # Avoid unnecessary memory
         self.drop_1 = nn.Dropout2d(p=0.35)
         self.drop_2 = nn.Dropout2d(p=1.)
-        del self.base_model
-        del self.base_layers
+        #del self.base_model
+        #del self.base_layers
 
     def forward(self, input, outputs, mani):
         # Intermediate channels
