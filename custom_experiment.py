@@ -200,7 +200,7 @@ if __name__ == '__main__':
 
 
 
-    net.eval()
+    #net.eval()
     print(net)
 
     encoder.train()
@@ -219,7 +219,8 @@ if __name__ == '__main__':
 
     # Optimizer
     optimizer_ft = optim.Adam(net.parameters(), lr=1e-4, betas=(0.9, 0.999), eps=1e-08, weight_decay=4e-5)
-    optimft_2 = optim.Adam(encoder.parameters(), lr=1e-4, betas=(0.9, 0.999), eps=1e-08, weight_decay=4e-5)
+    net.eval()
+    optimft_2 = optim.Adam(encoder.parameters(), lr=1e-3, betas=(0.9, 0.999), eps=1e-08, weight_decay=4e-5)
     #scheduler = optim.lr_scheduler.StepLR(optimizer_ft, step_size=100, gamma=0.1)
     best_loss = 50
     iter_train = 0
@@ -250,7 +251,8 @@ if __name__ == '__main__':
         if epoch == 4:
             for p in net.parameters():
                 p.requires_grad = True
-                net.train()
+            optimizer_ft = optim.Adam(net.parameters(), lr=1e-4, betas=(0.9, 0.999), eps=1e-08, weight_decay=4e-5)
+            
         for _i, (depths, rgbs, filename) in enumerate(training_generator):
 
             #cont+=1
