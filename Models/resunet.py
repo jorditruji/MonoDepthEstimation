@@ -66,8 +66,10 @@ class RGBEncoder(nn.Module):
         #input = self.drop_1(input)
         #output = self.drop_2(outputs)  
         #ground_truth = self.drop_2(ground_truth)
+        '''
         x_original = self.conv_original_size0(input)
         x_original = self.conv_original_size1(x_original)
+        '''
         # Down pass RGB
         layer0 = self.layer0(input)            
         layer1 = self.layer1(layer0)
