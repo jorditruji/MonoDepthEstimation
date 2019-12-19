@@ -8,6 +8,7 @@ import torch.nn as nn
 import sys
 import copy
 from Models.resunet import RGBDepth_Depth_mani, RGBEncoder
+from Models.resunet_reformat import RGBDepth_Depth_v2
 import torch.nn.functional as F
 import matplotlib 
 matplotlib.use('Agg')
@@ -168,7 +169,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Instantiate a model and dataset
-    net = RGBDepth_Depth_mani()
+    net = RGBDepth_Depth_v2()
     net.load_state_dict(torch.load('pesosmultioencoder', map_location = 'cpu')['model'])
     for p in net.parameters():
         p.requires_grad = False
