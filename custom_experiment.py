@@ -219,6 +219,7 @@ if __name__ == '__main__':
 
     # Optimizer
     optimizer_ft = optim.Adam(net.parameters(), lr=1e-4, betas=(0.9, 0.999), eps=1e-08, weight_decay=4e-5)
+    optimft_2 = optim.Adam(encoder.parameters(), lr=1e-4, betas=(0.9, 0.999), eps=1e-08, weight_decay=4e-5)
     #scheduler = optim.lr_scheduler.StepLR(optimizer_ft, step_size=100, gamma=0.1)
     best_loss = 50
     iter_train = 0
@@ -261,6 +262,7 @@ if __name__ == '__main__':
 
             # Clean grads
             optimizer_ft.zero_grad()
+            optimft_2.zero_grad()
 
             #Forward
             mani_RGB = encoder(inputs.clone())
@@ -293,6 +295,7 @@ if __name__ == '__main__':
             loss.backward()
             torch.nn.utils.clip_grad_norm_(encoder.parameters(), 1.)
             optimizer_ft.step()
+            optimft_2.step()
             loss_train+=loss.item()*inputs.size(0)
             if cont%250 == 0:
                 #loss.append(depth_loss.item())
