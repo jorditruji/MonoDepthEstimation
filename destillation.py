@@ -294,7 +294,7 @@ if __name__ == '__main__':
 
             destillation = desti_loss(predicts, pre_predicts)
 
-            loss =  depth_loss + 0.3*embed_lose1 + 0.3*pre_decoder + 0.5*destillation #depth_loss + 10*gradie_loss# +(0.5**epoch)*embed_lose# + normal_loss
+            loss =  depth_loss + 0.25*embed_lose1 + 0.25*pre_decoder + 0.5*destillation #depth_loss + 10*gradie_loss# +(0.5**epoch)*embed_lose# + normal_loss
 
 
             writer.add_scalar('Loss/train_real_loss', loss.item(),  iter_train)
@@ -308,7 +308,6 @@ if __name__ == '__main__':
                 #loss.append(depth_loss.item())
                 print("TRAIN: [epoch %2d][iter %4d] loss: %.4f" \
                 % (epoch, cont, depth_loss.item()))
-                print("Mani: {}, depth:{}, gradient{}".format(0.075*embed_lose, depth_loss, gradie_loss))
             cont+=1    
         if epoch%1==0:
             predict_depth = predicts[0].detach().cpu()
@@ -341,7 +340,7 @@ if __name__ == '__main__':
                 
                 #Forward
                 predicts, grad_predict, manifold, manifold2 = encoder(inputs.clone())
-                pre_predicts, pre_grad_predict, pre_manifold, pre_manifold2 = net(inputs,outputs, mani_RGB)
+                pre_predicts, pre_grad_predict, pre_manifold, pre_manifold2 = net(inputs,outputs)
                 #Sobel grad estimates:
                 real_grad = net.imgrad(outputs)
 
