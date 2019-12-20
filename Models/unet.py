@@ -71,7 +71,7 @@ class ResNetUNet(nn.Module):
         layer4 = self.layer4(layer3)
 
         # loss L_emb
-        embedding_loss = layer4_e_loss(layer4)
+        embedding_loss = self.layer4_e_loss(layer4)
 
 
         layer4 = self.layer4_1x1(embedding_loss)
