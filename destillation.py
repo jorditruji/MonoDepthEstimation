@@ -265,7 +265,7 @@ if __name__ == '__main__':
 
             #Forward
             predicts, grad_predict, manifold, manifold2 = encoder(inputs.clone())
-            pre_predicts, pre_grad_predict, pre_manifold, pre_manifold2 = net(inputs,outputs, mani_RGB)
+            pre_predicts, pre_grad_predict, pre_manifold, pre_manifold2 = net(inputs,outputs)
             #print("inputs: depth {} rgb {}".format(inputs.size(), outputs.size()))
             #print("outputs: depth {} grad {}".format(predicts.size(), grads.size()))
                

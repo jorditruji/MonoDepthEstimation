@@ -358,7 +358,7 @@ class RGBDepth_Depth_mani_v2(nn.Module):
         #del self.base_model
         #del self.base_layers
 
-    def forward(self, input, outputs, mani):
+    def forward(self, input, outputs):
         # Intermediate channels
         #start_time = time.time()
         #input = self.drop_1(input)
@@ -425,7 +425,7 @@ class RGBDepth_Depth_mani_v2(nn.Module):
         '''
         # Decoder depth
         
-        layer4 = self.layer4_1x1(mani)
+        layer4 = self.layer4_1x1(depth_layer4)
         layer4 = self.drop_1(layer4)
 
         depth = self.upsample_v2(layer4)
