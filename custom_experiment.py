@@ -172,7 +172,7 @@ if __name__ == '__main__':
     net = RGBDepth_Depth_mani()
     net.load_state_dict(torch.load('pesosmultioencoder', map_location = 'cpu')['model'])
     for p in net.parameters():
-        p.requires_grad = False
+        p.requires_grad = True
     encoder = RGBEncoder()
 
 
@@ -246,13 +246,18 @@ if __name__ == '__main__':
         dataset_val = NYUDataset(depths_list['val'],  transforms=test_trans)
         training_generator = data.DataLoader(dataset,**params)
         val_generator = data.DataLoader(dataset_val,**params_test)
-        if epoch >3:
-            net.train()
+
         if epoch == 4:
+            del net
+            net = RGBDepth_Depth_mani()
+            net.load_state_dict(torch.load('pesosmultioencoder', map_location = 'cpu')['model'])
             for p in net.parameters():
                 p.requires_grad = True
+            net = net.to(device)
             optimizer_ft = optim.Adam(net.parameters(), lr=1e-4, betas=(0.9, 0.999), eps=1e-08, weight_decay=4e-5)
-            
+        if epoch >3:
+            net.train()
+
         for _i, (depths, rgbs, filename) in enumerate(training_generator):
 
             #cont+=1
