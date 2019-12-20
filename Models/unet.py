@@ -32,10 +32,17 @@ class ResNetUNet(nn.Module):
         self.layer3_1x1 = convrelu(256, 256, 1, 0)  
         self.layer4 = self.base_layers[7]  # size=(N, 512, x.H/32, x.W/32)
         self.layer4_1x1 = convrelu(512, 512, 1, 0)  
+
+        self.layer4_e_loss = convrelu(512, 512, 1, 0)  
+
+
         
         self.upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
         
         self.upsample_v2 = nn.Upsample(size =(15, 20), mode='bilinear', align_corners=True)
+
+
+
 
         self.conv_up3 = convrelu(256 + 512, 512, 3, 1)
         self.conv_up2 = convrelu(128 + 512, 256, 3, 1)
@@ -62,8 +69,14 @@ class ResNetUNet(nn.Module):
         layer2 = self.layer2(layer1)
         layer3 = self.layer3(layer2)        
         layer4 = self.layer4(layer3)
-        
-        layer4 = self.layer4_1x1(layer4)
+
+        # loss L_emb
+        embedding_loss = layer4_e_loss(layer4)
+
+
+        layer4 = self.layer4_1x1(embedding_loss)
+
+
         x = self.upsample_v2(layer4)
         layer3 = self.layer3_1x1(layer3)
 
@@ -90,7 +103,7 @@ class ResNetUNet(nn.Module):
         
         out = self.conv_last(x)        
         
-        return out, self.imgrad(out)
+        return out, self.imgrad(out), embedding_loss, x
     
     def make_sobel_filters(self):
         ''' Returns sobel filters as part of the network'''
