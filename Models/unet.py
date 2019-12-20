@@ -15,7 +15,7 @@ def convrelu(in_channels, out_channels, kernel, padding):
 
 class ResNetUNet(nn.Module):
 
-    def __init__(self, n_class):
+    def __init__(self, n_class = 1):
         super().__init__()
         
         self.base_model = models.resnet18(pretrained=True)
