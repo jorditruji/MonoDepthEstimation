@@ -188,11 +188,11 @@ if __name__ == '__main__':
 
     # dataset = Dataset(np.load('Data_management/dataset.npy').item()['train'][1:20])
     # Parameters
-    params = {'batch_size': 18 ,
+    params = {'batch_size': 12 ,
               'shuffle': True,
               'num_workers': 8,
               'pin_memory': True}
-    params_test = {'batch_size': 18 ,
+    params_test = {'batch_size': 12 ,
               'shuffle': False,
               'num_workers': 8,
               'pin_memory': True}
