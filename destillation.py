@@ -212,7 +212,6 @@ if __name__ == '__main__':
     depth_criterion = RMSE_log()
     grad_loss = GradLoss()
     mani_loss1 = RMSE()
-    mani_loss2 = RMSE()
     desti_loss = RMSE_log()
 
 
@@ -284,11 +283,11 @@ if __name__ == '__main__':
             #normal_loss = normal_loss(predict_grad, real_grad) * (epoch>7)
             #cont+=1
             # Manifold loss
-            embed_lose1 = mani_loss(manifold,pre_manifold)
+            embed_lose1 = mani_loss1(manifold,pre_manifold)
             writer.add_scalar('Loss/train_embedding_MSE', embed_lose1.item(), iter_train)
 
 
-            pre_decoder = mani_loss(manifold2,pre_manifold2)
+            pre_decoder = mani_loss1(manifold2,pre_manifold2)
             writer.add_scalar('Loss/before_decoding_representation', pre_decoder.item(), iter_train)
             
 
