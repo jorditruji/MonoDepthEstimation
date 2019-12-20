@@ -172,7 +172,7 @@ if __name__ == '__main__':
     net = RGBDepth_Depth_mani()
     net = net.load_state_dict(torch.load('pesosmultioencoder', map_location = 'cpu')['model'])
     for p in net.parameters():
-        p.requires_grad = True
+        p.requires_grad = False
     encoder = RGBEncoder()
 
 
