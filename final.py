@@ -250,6 +250,7 @@ if __name__ == '__main__':
         val_generator = data.DataLoader(dataset_val,**params_test)
 
             
+            
         for _i, (depths, rgbs, filename) in enumerate(training_generator):
 
             #cont+=1
