@@ -303,7 +303,7 @@ if __name__ == '__main__':
 
             # Grad loss
             gradie_loss = 0.
-            if epoch > -1:
+            if epoch > 1:
                 real_grad = net.imgrad(outputs)
                 gradie_loss = grad_loss(grads, real_grad)#+ grad_loss(grads[1], real_grad)
                 writer.add_scalar('Loss/train_MAE_grad_log', gradie_loss.item(), iter_train)
@@ -339,7 +339,7 @@ if __name__ == '__main__':
      
         print("\n FINISHED TRAIN epoch %2d with loss: %.4f " % (epoch, loss_train ))
         # Val
-        #net.eval()
+        net.eval()
         loss_val = 0.0
         cont = 0
 
@@ -382,7 +382,7 @@ if __name__ == '__main__':
         if loss_val< best_loss and epoch>6:
             best_loss = depth_loss
             best_model_wts = copy.deepcopy(net.state_dict())
-            #torch.save({'model': net.state_dict(), 'optim':optimizer_ft.state_dict() }, 'Dropped/model_unet_V2')
+            torch.save({'model': best_model_wts, 'optim':optimizer_ft.state_dict() }, 'infer_model_unet')
 
 
 

@@ -33,9 +33,6 @@ class ResNetUNet(nn.Module):
         self.layer4 = self.base_layers[7]  # size=(N, 512, x.H/32, x.W/32)
         self.layer4_1x1 = convrelu(512, 512, 1, 0)  
 
-        self.layer4_e_loss = convrelu(512, 512, 1, 0)  
-
-
         
         self.upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
         
@@ -71,10 +68,9 @@ class ResNetUNet(nn.Module):
         layer4 = self.layer4(layer3)
 
         # loss L_emb
-        embedding_loss = self.layer4_e_loss(layer4)
 
 
-        layer4 = self.layer4_1x1(embedding_loss)
+        layer4 = self.layer4_1x1(layer4)
 
 
         x = self.upsample_v2(layer4)
@@ -103,7 +99,7 @@ class ResNetUNet(nn.Module):
         
         out = self.conv_last(x)        
         
-        return out, self.imgrad(out), embedding_loss, x
+        return out, self.imgrad(out), None, x
     
     def make_sobel_filters(self):
         ''' Returns sobel filters as part of the network'''
@@ -114,7 +110,7 @@ class ResNetUNet(nn.Module):
 
         # Add dims to fit batch_size, n_filters, filter shape
         a = a.view((1,1,3,3))
-        a = Variable(a)
+        a = Variable(a, requires_grad=False)
 
         # Repeat for vertical contours
         b = torch.Tensor([[1, 2, 1],
@@ -122,7 +118,7 @@ class ResNetUNet(nn.Module):
                         [-1, -2, -1]])
 
         b = b.view((1,1,3,3))
-        b = Variable(b)
+        b = Variable(b, requires_grad=False)
 
         return a,b
 
