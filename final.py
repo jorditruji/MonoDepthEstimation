@@ -273,14 +273,14 @@ if __name__ == '__main__':
             depth_loss = depth_criterion(predicts, outputs) #+ depth_criterion(predicts[1], outputs)
             writer.add_scalar('Loss/train_RMSE_log', depth_loss.item(),iter_train)
             error_control = depth_criterion(pre_predicts, outputs)
-            writer.add_scalar('Teacher/log_RMSE', error_control.item(),iter_train)
+            writer.add_scalar('Teacher/train_log_RMSE', error_control.item(),iter_train)
             if (depth_loss-0.15) > error_control:
                 depth_loss = depth_loss + depth_loss
 
 
             # Grad loss
             gradie_loss = 0.
-            if epoch > 0:
+            if epoch > 1:
                 real_grad = net.imgrad(outputs)
                 gradie_loss = grad_loss(grad_predict, real_grad)#+ grad_loss(grads[1], real_grad)
                 writer.add_scalar('Loss/train_MAE_grad_log', gradie_loss.item(), iter_train)
@@ -350,6 +350,8 @@ if __name__ == '__main__':
 
                 depth_loss = depth_criterion(predicts, outputs)#+depth_criterion(predict_grad, real_grad)
                 writer.add_scalar('Loss/val_RMSE_log', depth_loss.item(), iter_val)
+                depth_loss2 = depth_criterion(pre_predicts, outputs)#+depth_criterion(predict_grad, real_grad)
+                writer.add_scalar('Teacher/val_RMSE_log', depth_loss2.item(), iter_val)
 
                 loss_val+=depth_loss.item()*inputs.size(0)
                 if cont%250 == 0:
