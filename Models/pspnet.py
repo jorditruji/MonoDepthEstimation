@@ -55,13 +55,13 @@ class PSPNet(nn.Module):
         super(PSPNet, self).__init__()
         self.feats = getattr(extractors, backend)(pretrained)
         self.psp = PSPModule(psp_size, 1024, sizes)
-        self.drop_1 = nn.Dropout2d(p=0.3)
+        self.drop_1 = nn.Dropout2d(p=0.5)
 
         self.up_1 = PSPUpsample(1024, 256)
         self.up_2 = PSPUpsample(256, 64)
         self.up_3 = PSPUpsample(64, 64)
 
-        self.drop_2 = nn.Dropout2d(p=0.15)
+        self.drop_2 = nn.Dropout2d(p=0.35)
         self.final = nn.Sequential(
             nn.Conv2d(64, n_classes, kernel_size=1),
             nn.Sigmoid()
@@ -87,7 +87,7 @@ class PSPNet(nn.Module):
 
         # Add dims to fit batch_size, n_filters, filter shape
         a = a.view((1,1,3,3))
-        a = Variable(a)
+        a = Variable(a, requires_grad = False)
 
                 # Repeat for vertical contours
         b = torch.Tensor([[1, 2, 1],
@@ -95,7 +95,7 @@ class PSPNet(nn.Module):
                         [-1, -2, -1]])
 
         b = b.view((1,1,3,3))
-        b = Variable(b)
+        b = Variable(b, requires_grad = False)
 
         return a,b
 

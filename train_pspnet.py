@@ -210,7 +210,7 @@ if __name__ == '__main__':
         }
 
     # Instantiate a model and dataset
-    net = models['resnet50']()
+    net = models['resnet152']()
 
 
 
@@ -223,11 +223,11 @@ if __name__ == '__main__':
 
     # dataset = Dataset(np.load('Data_management/dataset.npy').item()['train'][1:20])
     # Parameters
-    params = {'batch_size': 18 ,
+    params = {'batch_size': 16 ,
               'shuffle': True,
               'num_workers': 8,
               'pin_memory': True}
-    params_test = {'batch_size': 18 ,
+    params_test = {'batch_size': 16 ,
               'shuffle': False,
               'num_workers': 8,
               'pin_memory': True}
@@ -252,7 +252,7 @@ if __name__ == '__main__':
     net = net.to(device)
 
     # Optimizer
-    optimizer_ft = optim.Adam(net.parameters(), lr=1e-4, betas=(0.9, 0.999), eps=1e-08, weight_decay=4e-5)
+    optimizer_ft = optim.Adam(net.parameters(), lr=2e-5, betas=(0.9, 0.999), eps=1e-08, weight_decay=4e-6)
     #scheduler = optim.lr_scheduler.StepLR(optimizer_ft, step_size=100, gamma=0.1)
     best_loss = 50
     iter_train = 0
@@ -271,7 +271,6 @@ if __name__ == '__main__':
         # Transforms train
         train_trans = make_train_transforms(drop_p = RGB_drops[epoch])
         test_trans =  make_test_transforms(drop_p = RGB_drops[epoch])
-        print("{} ratio of RGB zeroed pixels".format(RGB_drops[epoch]))
 
         # Create datasets
         dataset = NYUDataset(train_depths,  transforms=train_trans)
@@ -284,7 +283,6 @@ if __name__ == '__main__':
             iter_train+=1
             # Get items from generator
             inputs, outputs = rgbs.cuda(), depths.cuda()
-            writer.add_scalar('Others/train_RGB_information', 1-RGB_drops[epoch],iter_train)
 
             #print(torch.max(outputs.view(input.size(0), -1)))
 
@@ -338,7 +336,7 @@ if __name__ == '__main__':
      
         print("\n FINISHED TRAIN epoch %2d with loss: %.4f " % (epoch, loss_train ))
         # Val
-        #net.eval()
+        net.eval()
         loss_val = 0.0
         cont = 0
 

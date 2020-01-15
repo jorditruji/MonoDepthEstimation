@@ -224,6 +224,38 @@ class ResNetUNet_v2(nn.Module):
         out = self.conv_last(x)        
         
         return out, self.imgrad(out), embedding_loss, x
+    
+    def make_sobel_filters(self):
+        ''' Returns sobel filters as part of the network'''
+
+        a = torch.Tensor([[1, 0, -1],
+                        [2, 0, -2],
+                        [1, 0, -1]])
+
+        # Add dims to fit batch_size, n_filters, filter shape
+        a = a.view((1,1,3,3))
+        a = Variable(a, requires_grad=False)
+
+        # Repeat for vertical contours
+        b = torch.Tensor([[1, 2, 1],
+                        [0, 0, 0],
+                        [-1, -2, -1]])
+
+        b = b.view((1,1,3,3))
+        b = Variable(b, requires_grad=False)
+
+        return a,b
+
+    
+    def imgrad(self,img):
+        # Filter horizontal contours
+        G_x = F.conv2d(img, self.x_sobel)
+        
+        # Filter vertical contrours
+        G_y = F.conv2d(img, self.y_sobel)
+
+        G = torch.sqrt(torch.pow(G_x,2)+ torch.pow(G_y,2))
+        return G
 if __name__ == "__main__":
 	model = ResNetUNet(5)
 	print(model.layer4)
