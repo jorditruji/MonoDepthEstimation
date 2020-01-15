@@ -298,7 +298,7 @@ if __name__ == '__main__':
             
 
 
-            loss =  depth_loss + 0.25*embed_lose1 + 0.25*pre_decoder#depth_loss + 10*gradie_loss# +(0.5**epoch)*embed_lose# + normal_loss
+            loss =  depth_loss + 0.025*embed_lose1 + 0.025*pre_decoder#depth_loss + 10*gradie_loss# +(0.5**epoch)*embed_lose# + normal_loss
 
 
             writer.add_scalar('Loss/train_real_loss', loss.item(),  iter_train)
