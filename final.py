@@ -9,7 +9,7 @@ import sys
 import copy
 from Models.resunet import RGBDepth_Depth_mani_v2, RGBEncoder
 from Models.resunet_reformat import RGBDepth_Depth_v2
-from Models.unet import ResNetUNet
+from Models.unet import ResNetUNet_v2
 import torch.nn.functional as F
 import matplotlib 
 matplotlib.use('Agg')
@@ -175,9 +175,7 @@ if __name__ == '__main__':
     for p in net.parameters():
         p.requires_grad = False
 
-    encoder = ResNetUNet()
-
-
+    encoder = ResNetUNet_v2()
 
 
 
