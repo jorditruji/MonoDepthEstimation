@@ -269,7 +269,7 @@ if __name__ == '__main__':
                
             #Backward+update weights
             depth_loss = depth_criterion(predicts, outputs) #+ depth_criterion(predicts[1], outputs)
-            writer.add_scalar('Loss/train_RMSE_log', depth_loss.item(),iter_train)
+            writer.add_scalar('Loss/train_log_RMSE', depth_loss.item(),iter_train)
             error_control = depth_criterion(pre_predicts, outputs)
             writer.add_scalar('Teacher/train_log_RMSE', error_control.item(),iter_train)
             if (depth_loss-0.15) > error_control:
@@ -295,9 +295,10 @@ if __name__ == '__main__':
             writer.add_scalar('Loss/before_decoding_representation', pre_decoder.item(), iter_train)
             
 
-
-            loss =  depth_loss + 0.025*embed_lose1 + 0.025*pre_decoder#depth_loss + 10*gradie_loss# +(0.5**epoch)*embed_lose# + normal_loss
-
+            if epoch<=2:
+                loss =  depth_loss + 0.025*embed_lose1 + 0.025*pre_decoder#depth_loss + 10*gradie_loss# +(0.5**epoch)*embed_lose# + normal_loss
+            else:
+                loss = depth_loss
 
             writer.add_scalar('Loss/train_real_loss', loss.item(),  iter_train)
 
