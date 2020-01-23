@@ -234,7 +234,7 @@ class ResNetUNet_v2(nn.Module):
 
         # Add dims to fit batch_size, n_filters, filter shape
         a = a.view((1,1,3,3))
-        a = Variable(a, requires_grad=False)
+        a = Variable(a)
 
         # Repeat for vertical contours
         b = torch.Tensor([[1, 2, 1],
@@ -242,7 +242,7 @@ class ResNetUNet_v2(nn.Module):
                         [-1, -2, -1]])
 
         b = b.view((1,1,3,3))
-        b = Variable(b, requires_grad=False)
+        b = Variable(b)
 
         return a,b
 

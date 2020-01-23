@@ -75,8 +75,8 @@ class PSPNet(nn.Module):
         )
         '''
         self.x_sobel, self.y_sobel = self.make_sobel_filters()
-        self.x_sobel = self.x_sobel.cuda()
-        self.y_sobel = self.y_sobel.cuda()
+        #self.x_sobel = self.x_sobel.cuda()
+        #self.y_sobel = self.y_sobel.cuda()
 
     def make_sobel_filters(self):
         ''' Returns sobel filters as part of the network'''
@@ -87,7 +87,7 @@ class PSPNet(nn.Module):
 
         # Add dims to fit batch_size, n_filters, filter shape
         a = a.view((1,1,3,3))
-        a = Variable(a, requires_grad = False)
+        a = Variable(a)#, requires_grad = False)
 
                 # Repeat for vertical contours
         b = torch.Tensor([[1, 2, 1],
@@ -95,7 +95,7 @@ class PSPNet(nn.Module):
                         [-1, -2, -1]])
 
         b = b.view((1,1,3,3))
-        b = Variable(b, requires_grad = False)
+        b = Variable(b)#, requires_grad = False)
 
         return a,b
 
