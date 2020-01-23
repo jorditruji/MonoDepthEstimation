@@ -221,8 +221,8 @@ if __name__ == '__main__':
 
     # Optimizer
     net.eval()
-    optimft_2 = optim.SGD(model_ft.parameters(), lr=0.001, momentum=0.9)#optim.Adam(encoder.parameters(), lr=1e-3, betas=(0.9, 0.999), eps=1e-08, weight_decay=4e-5)
-    scheduler = optim.lr_scheduler.StepLR(optimizer_ft, step_size=100, gamma=0.1)
+    optimft_2 = optim.SGD(encoder.parameters(), lr=0.001, momentum=0.9)#optim.Adam(encoder.parameters(), lr=1e-3, betas=(0.9, 0.999), eps=1e-08, weight_decay=4e-5)
+    scheduler = optim.lr_scheduler.StepLR(optimft_2, step_size=100, gamma=0.1)
     best_loss = 50
     iter_train = 0
     iter_val = 0
