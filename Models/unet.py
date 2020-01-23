@@ -135,10 +135,10 @@ class ResNetUNet(nn.Module):
 
 class ResNetUNet_v2(nn.Module):
 
-    def __init__(self, n_class = 1):
+    def __init__(self, trained = True, n_class = 1):
         super().__init__()
         
-        self.base_model = models.resnet18(pretrained=True)
+        self.base_model = models.resnet18(pretrained=trained)
         
         self.base_layers = list(self.base_model.children())                
         

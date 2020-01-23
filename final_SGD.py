@@ -175,7 +175,7 @@ if __name__ == '__main__':
     for p in net.parameters():
         p.requires_grad = False
 
-    encoder = ResNetUNet_v2()
+    encoder = ResNetUNet_v2(trained = False)
 
 
 
